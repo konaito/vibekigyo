@@ -78,7 +78,7 @@ export async function callOpenAI(
   return JSON.parse(content);
 }
 
-export function createSystemPrompt(promptContent: string, sections: any): Message {
+export function createSystemPrompt(promptContent: string, sections: Record<string, string>): Message {
   return {
     role: "system",
     content: promptContent.replace('${JSON.stringify(sections, null, 2)}', JSON.stringify(sections, null, 2))
@@ -92,7 +92,7 @@ export function prepareMessages(
 ): Message[] {
   return [
     systemPrompt,
-    ...messages.filter((msg: Message) => msg.role !== 'system'),
+    ...messages.filter((msg) => msg.role !== 'system'),
     { role: "user", content: instruction }
   ];
 }

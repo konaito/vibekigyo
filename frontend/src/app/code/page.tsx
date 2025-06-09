@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -258,78 +258,6 @@ const templateSections: Sections = {
   '📅 開発スケジュール': '- 未定',
 };
 
-// 事業アイデアをアプリ企画に変換する関数
-function convertBusinessToApp(businessSections: Sections): Sections {
-  const convertedSections: Sections = { ...templateSections };
-  
-  // プロジェクト概要の変換
-  if (businessSections['📌 プロジェクト概要']) {
-    const businessOverview = businessSections['📌 プロジェクト概要'];
-    const projectName = extractTableValue(businessOverview, 'プロジェクト名') || '新規アプリ';
-    const overview = extractTableValue(businessOverview, '概要') || '事業アイデアからのアプリ化';
-    
-    convertedSections['📌 プロジェクト概要'] = `| 項目 | 内容 |
-|------|------|
-| アプリ名 | ${projectName} App |
-| カテゴリ | ビジネス・生産性 |
-| 対象プラットフォーム | Web (React), Mobile (React Native) |
-| 開発期間 | 6ヶ月 |
-| 概要 | ${overview} |`;
-  }
-  
-  // ターゲットユーザーの変換
-  if (businessSections['🎯 顧客セグメント（ターゲット）'] || businessSections['🎯 ターゲットユーザー']) {
-    const targetSection = businessSections['🎯 顧客セグメント（ターゲット）'] || businessSections['🎯 ターゲットユーザー'];
-    convertedSections['🎯 ターゲットユーザー'] = `### アプリユーザー
-${targetSection}
-
-### 利用シーン
-- 外出先での業務効率化
-- リアルタイムでの情報確認・更新
-- チームとのコラボレーション`;
-  }
-  
-  // 価値提案の変換
-  if (businessSections['💎 価値提案']) {
-    const valueProposition = businessSections['💎 価値提案'];
-    convertedSections['💎 価値提案'] = `### アプリの価値
-${valueProposition}
-
-### モバイル・Web最適化
-- いつでもどこでもアクセス可能
-- 直感的なUI/UX設計
-- オフライン機能対応`;
-  }
-  
-  // 主な機能の変換
-  if (businessSections['🚀 主な機能・MVP'] || businessSections['⚡ 主要機能']) {
-    const featuresSection = businessSections['🚀 主な機能・MVP'] || businessSections['⚡ 主要機能'];
-    convertedSections['⚡ 主要機能'] = `### Core機能
-${featuresSection}
-
-### アプリ特有機能
-- プッシュ通知
-- オフライン同期
-- 生体認証ログイン
-- ダークモード対応`;
-  }
-  
-  return convertedSections;
-}
-
-// テーブル形式から値を抽出するヘルパー関数
-function extractTableValue(tableText: string, key: string): string | null {
-  const lines = tableText.split('\n');
-  for (const line of lines) {
-    if (line.includes(key)) {
-      const parts = line.split('|');
-      if (parts.length >= 3) {
-        return parts[2].trim();
-      }
-    }
-  }
-  return null;
-}
 
 export default function CodePage() {
   const [messages, setMessages] = useState<Message[]>([
@@ -345,75 +273,8 @@ export default function CodePage() {
   const [sections, setSections] = useState<Sections>(demoSections);
   const [isFirstMessage, setIsFirstMessage] = useState(true);
 
-  // URLパラメータから事業アイデアを受け取る
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const fromBusiness = urlParams.get('from') === 'business';
-    
-    if (fromBusiness) {
-      try {
-        // localStorageからデータを取得
-        const businessDataStr = localStorage.getItem('vibeBusinessData');
-        if (!businessDataStr) {
-          console.error('No business data found in localStorage');
-          return;
-        }
-        
-        const parsedData = JSON.parse(businessDataStr);
-        
-        // データが古すぎる場合はスキップ (1時間以内)
-        if (Date.now() - parsedData.timestamp > 60 * 60 * 1000) {
-          console.warn('Business data is too old, skipping');
-          localStorage.removeItem('vibeBusinessData');
-          return;
-        }
-        
-        // 事業企画書のMarkdown全体を生成
-        const businessMarkdown = Object.entries(parsedData.sections)
-          .map(([title, content]) => `## ${title}\n\n${content}`)
-          .join('\n\n');
-        
-        // テンプレートセクションにリセット
-        setSections(templateSections);
-        
-        // 事業アイデア全体を最初のメッセージとして自動送信
-        const initialMessage = `以下はvibe起業.mdで作成した事業企画書です。この事業アイデアをアプリとして実現するための詳細な開発企画書を作成してください：\n\n${businessMarkdown}`;
-        
-        // メッセージにユーザーの要求として追加
-        setMessages(prev => [
-          ...prev,
-          { role: 'user', content: initialMessage }
-        ]);
-        
-        setIsFirstMessage(false);
-        
-        // 自動でAPI呼び出しを実行
-        setTimeout(() => {
-          handleAutoSubmit(initialMessage, parsedData.sections);
-        }, 100);
-        
-        // URLをクリーンアップ
-        window.history.replaceState({}, document.title, '/code');
-        
-        // 使用済みデータを削除
-        localStorage.removeItem('vibeBusinessData');
-      } catch (error) {
-        console.error('Failed to parse business data:', error);
-        localStorage.removeItem('vibeBusinessData');
-      }
-    }
-  }, []);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
-  const chatEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   // 自動送信用の関数
-  const handleAutoSubmit = async (instruction: string, originalSections: any) => {
+  const handleAutoSubmit = useCallback(async (instruction: string) => {
     setIsLoading(true);
 
     try {
@@ -505,7 +366,74 @@ export default function CodePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [messages]);
+
+  // URLパラメータから事業アイデアを受け取る
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromBusiness = urlParams.get('from') === 'business';
+    
+    if (fromBusiness) {
+      try {
+        // localStorageからデータを取得
+        const businessDataStr = localStorage.getItem('vibeBusinessData');
+        if (!businessDataStr) {
+          console.error('No business data found in localStorage');
+          return;
+        }
+        
+        const parsedData = JSON.parse(businessDataStr);
+        
+        // データが古すぎる場合はスキップ (1時間以内)
+        if (Date.now() - parsedData.timestamp > 60 * 60 * 1000) {
+          console.warn('Business data is too old, skipping');
+          localStorage.removeItem('vibeBusinessData');
+          return;
+        }
+        
+        // 事業企画書のMarkdown全体を生成
+        const businessMarkdown = Object.entries(parsedData.sections)
+          .map(([title, content]) => `## ${title}\n\n${content}`)
+          .join('\n\n');
+        
+        // テンプレートセクションにリセット
+        setSections(templateSections);
+        
+        // 事業アイデア全体を最初のメッセージとして自動送信
+        const initialMessage = `以下はvibe起業.mdで作成した事業企画書です。この事業アイデアをアプリとして実現するための詳細な開発企画書を作成してください：\n\n${businessMarkdown}`;
+        
+        // メッセージにユーザーの要求として追加
+        setMessages(prev => [
+          ...prev,
+          { role: 'user', content: initialMessage }
+        ]);
+        
+        setIsFirstMessage(false);
+        
+        // 自動でAPI呼び出しを実行
+        setTimeout(() => {
+          handleAutoSubmit(initialMessage);
+        }, 100);
+        
+        // URLをクリーンアップ
+        window.history.replaceState({}, document.title, '/code');
+        
+        // 使用済みデータを削除
+        localStorage.removeItem('vibeBusinessData');
+      } catch (error) {
+        console.error('Failed to parse business data:', error);
+        localStorage.removeItem('vibeBusinessData');
+      }
+    }
+  }, [handleAutoSubmit]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
