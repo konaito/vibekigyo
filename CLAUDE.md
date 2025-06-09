@@ -5,6 +5,7 @@
 - Use `bun` commands instead of `npm` or `yarn`
 - For example: `bun install`, `bun run dev`, `bun test`, etc.
 - IMPORTANT: Never run `bun run dev` - the user will always run this command themselves
+- IMPORTANT: Always `cd frontend` before running build/test commands as they must be run from the frontend directory
 
 ## Git Workflow
 - Always create feature branches for new work
