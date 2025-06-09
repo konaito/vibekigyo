@@ -87,41 +87,36 @@ const demoSections: Sections = {
 3. **ネットワーク効果**: 企画書テンプレート共有コミュニティ`,
 
   '🚀 主な機能・MVP': `### コア機能 (現在)
-- **AI対話エンジン**: GPT-4o + 独自ビジネスフレームワークプロンプト
-- **リアルタイム企画書生成**: セクション別Markdown自動更新
-- **思考深掘り支援**: ビジネスモデルキャンバス9要素ベースの質問生成
-- **3タイプ応答制御**: chat/update/chat+update による柔軟な対話制御
+- **AI対話による企画書生成**: 対話を通じた戦略的思考支援
+- **ビジネスフレームワーク統合**: 構造化された企画書自動生成
+- **リアルタイム更新**: セクション別の企画書リアルタイム構築
+- **思考深掘り支援**: 5W1H・ビジネスモデルキャンバス活用
 
 ### MVP検証項目
-- ✅ **技術検証**: OpenRouter API統合・JSON Schema制御
-- ✅ **UX検証**: 2パネルレイアウト・独立スクロール
-- 🔄 **顧客検証**: 初期ユーザー5名でのユーザビリティテスト
+- ✅ **価値検証**: 企画書作成時間の大幅短縮を実証
+- ✅ **ユーザビリティ**: 直感的な操作性を確認
+- 🔄 **顧客検証**: 初期ユーザー5名でのインタビュー実施中
 - 📋 **市場検証**: 企画書品質向上効果の定量測定
 
 ### 次期機能 (v0.2)
 - **業界特化テンプレート**: SaaS・EC・FinTech・HealthTech別最適化
-- **競合分析自動化**: 公開情報スクレイピング + 3C分析自動生成
+- **競合分析自動化**: 市場データ統合による自動分析
 - **投資家マッチング**: 企画書内容ベースのVC・エンジェル推薦`,
 
-  '🛠 技術スタック・開発': `### フロントエンド
-- **Next.js 15 + React 19**: 最新フロントエンド基盤
-- **TypeScript**: 型安全性によるバグ削減
-- **Tailwind CSS v4**: 高速UI開発・デザインシステム
-- **react-markdown + remark-gfm**: 美しいMarkdown表示
-
-### バックエンド・AI
-- **OpenRouter API**: GPT-4o高品質推論エンジン
-- **JSON Schema**: 厳密なAI応答制御
-- **独自プロンプトエンジニアリング**: ビジネスフレームワーク統合
-
-### インフラ・運用
-- **Vercel**: エッジ配信・自動スケーリング
-- **Bun**: 高速ビルド・パッケージ管理
-- **環境変数管理**: セキュアなAPI key管理
-
-### 開発体制
+  '🏗 実装戦略': `### MVP開発アプローチ
 - **リーンスタートアップ**: Build-Measure-Learn高速サイクル
-- **アジャイル開発**: 1週間スプリント・継続的デプロイ`,
+- **段階的リリース**: コア機能→拡張機能→スケール機能
+- **ユーザーフィードバック重視**: 週次ユーザーインタビュー
+
+### 開発パートナーシップ
+- **技術パートナー**: 開発会社・フリーランス開発者との協業
+- **外部ベンダー**: AI API・インフラサービス活用
+- **アウトソーシング**: 非コア機能の外部委託
+
+### プロダクト戦略
+- **技術的差別化**: 独自のビジネスフレームワーク統合
+- **ユーザビリティ**: 直感的で使いやすいインターフェース
+- **スケーラビリティ**: 将来の成長に対応できる設計`,
 
   '💰 収益モデル・事業計画': `### 収益ストリーム
 1. **SaaSサブスクリプション** (メイン)
@@ -400,13 +395,22 @@ export default function Home() {
         <div className="p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-bold text-gray-800">vibe起業.md - AIと壁打ち</h1>
-            <button
-              onClick={clearHistory}
-              className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
-              title="チャット履歴をクリア"
-            >
-              履歴クリア
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => window.location.href = '/code'}
+                className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
+                title="vibeアプリ.mdに切り替え"
+              >
+                📱 vibeアプリ
+              </button>
+              <button
+                onClick={clearHistory}
+                className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
+                title="チャット履歴をクリア"
+              >
+                履歴クリア
+              </button>
+            </div>
           </div>
         </div>
         
@@ -483,7 +487,7 @@ export default function Home() {
                     alert('コピーに失敗しました。');
                   });
               }}
-              className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors text-sm relative"
+              className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors text-sm relative"
             >
               {copySuccess ? '✓ コピー完了' : 'コピー'}
             </button>
@@ -500,9 +504,26 @@ export default function Home() {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
               }}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
+              className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
             >
-              ダウンロード
+              エクスポート(md)
+            </button>
+            <button
+              onClick={() => {
+                // 現在の企画書データをlocalStorageに保存
+                const businessData = {
+                  sections: sections,
+                  timestamp: Date.now(),
+                  lastMessage: messages.filter(m => m.role !== 'system').slice(-1)[0]?.content || ''
+                };
+                localStorage.setItem('vibeBusinessData', JSON.stringify(businessData));
+                
+                // vibeアプリに繋ぎ込み
+                window.location.href = '/code?from=business';
+              }}
+              className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors text-sm"
+            >
+              エクスポート(vibeアプリ)
             </button>
           </div>
         </div>
