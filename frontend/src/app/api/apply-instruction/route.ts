@@ -81,7 +81,7 @@ ${JSON.stringify(sections, null, 2)}
 
     const apiMessages = [
       systemPrompt,
-      ...messages.filter((msg: any) => msg.role !== 'system'),
+      ...messages.filter((msg: { role: string }) => msg.role !== 'system'),
       { role: "user", content: instruction }
     ];
 

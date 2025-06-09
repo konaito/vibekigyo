@@ -233,45 +233,6 @@ const templateSections: Sections = {
   '📅 スケジュール': '- 未定',
 };
 
-// Markdown文字列をセクションオブジェクトに変換する関数
-function parseMarkdownToSections(markdown: string): Sections {
-  console.log('Parsing markdown:', markdown);
-  
-  if (!markdown || markdown.trim() === '') {
-    console.log('Empty markdown, returning empty sections');
-    return {};
-  }
-  
-  const sections: Sections = {};
-  const lines = markdown.split('\n');
-  let currentSection = '';
-  let currentContent: string[] = [];
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (line.startsWith('## ')) {
-      // 前のセクションを保存
-      if (currentSection) {
-        sections[currentSection] = currentContent.join('\n').trim();
-        console.log(`Added section: ${currentSection}`);
-      }
-      // 新しいセクション開始
-      currentSection = line.substring(3).trim();
-      currentContent = [];
-    } else {
-      currentContent.push(line);
-    }
-  }
-  
-  // 最後のセクションを保存
-  if (currentSection) {
-    sections[currentSection] = currentContent.join('\n').trim();
-    console.log(`Added final section: ${currentSection}`);
-  }
-  
-  console.log('Final sections:', sections);
-  return sections;
-}
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
