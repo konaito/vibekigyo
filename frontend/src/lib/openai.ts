@@ -1,6 +1,6 @@
 // OpenAI API呼び出しの共通ライブラリ
 
-import { openrouterapikey } from "./config";
+import { openrouterapikey } from "../utils/config";
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
