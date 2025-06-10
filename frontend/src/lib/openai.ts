@@ -100,10 +100,16 @@ export async function callOpenAI(
   }
 }
 
-export function createSystemPrompt(promptContent: string, sections: Record<string, string>): Message {
+export function createSystemPrompt(promptContent: string, sections: Record<string, string>, userLevel?: string): Message {
+  let content = promptContent.replace('${JSON.stringify(sections, null, 2)}', JSON.stringify(sections, null, 2));
+  
+  if (userLevel) {
+    content = content.replace('${userLevel}', userLevel);
+  }
+  
   return {
     role: "system",
-    content: promptContent.replace('${JSON.stringify(sections, null, 2)}', JSON.stringify(sections, null, 2))
+    content
   };
 }
 

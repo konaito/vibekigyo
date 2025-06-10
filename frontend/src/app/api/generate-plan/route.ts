@@ -5,13 +5,13 @@ import { codingPrompt } from '../../../lib/prompts/coding-prompt';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { instruction, sections, messages } = body;
+    const { instruction, sections, messages, userLevel = 'beginner' } = body;
 
     // Debug logging
     console.log('API Key exists:', !!process.env.OPENROUTER_API_KEY);
     console.log('API Key length:', process.env.OPENROUTER_API_KEY?.length);
 
-    const systemPrompt = createSystemPrompt(codingPrompt, sections);
+    const systemPrompt = createSystemPrompt(codingPrompt, sections, userLevel);
     const apiMessages = prepareMessages(systemPrompt, messages, instruction);
     const result = await callOpenAI(apiMessages, 'vibe-app-md');
     
