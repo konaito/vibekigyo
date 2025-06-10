@@ -3,6 +3,11 @@ import remarkGfm from 'remark-gfm';
 import { useState, useEffect, useCallback } from 'react';
 import { MarkdownPanelProps } from '../../types/chat';
 
+interface UserLevelToggleProps {
+  userLevel?: 'beginner' | 'engineer';
+  onUserLevelChange?: (level: 'beginner' | 'engineer') => void;
+}
+
 export default function MarkdownPanel({ 
   copySuccess, 
   sections,
@@ -10,8 +15,10 @@ export default function MarkdownPanel({
   onExport, 
   onSectionUpdate,
   onEditNotification,
-  extraActions 
-}: Omit<MarkdownPanelProps, 'title'>) {
+  extraActions,
+  userLevel,
+  onUserLevelChange
+}: Omit<MarkdownPanelProps, 'title'> & UserLevelToggleProps) {
   const [editingTitle, setEditingTitle] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [editingContent, setEditingContent] = useState<string | null>(null);
@@ -108,7 +115,36 @@ export default function MarkdownPanel({
 
   return (
     <div className="flex flex-col bg-white h-screen">
-      <div className="p-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm flex justify-end items-center flex-shrink-0 shadow-sm">
+      <div className={`p-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm flex items-center flex-shrink-0 shadow-sm ${userLevel && onUserLevelChange ? 'justify-between' : 'justify-end'}`}>
+        {/* ユーザーレベルトグル */}
+        {userLevel && onUserLevelChange && (
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">レベル:</span>
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => onUserLevelChange('beginner')}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all duration-200 ${
+                  userLevel === 'beginner'
+                    ? 'bg-orange-500 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                🔰 初心者
+              </button>
+              <button
+                onClick={() => onUserLevelChange('engineer')}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all duration-200 ${
+                  userLevel === 'engineer'
+                    ? 'bg-blue-500 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                ⚙️ エンジニア
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="flex space-x-3">
           <button
             onClick={onCopy}

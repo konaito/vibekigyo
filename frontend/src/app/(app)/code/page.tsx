@@ -1,23 +1,21 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import ChatMessages from '../../components/chat/ChatMessages';
-import ChatInput from '../../components/chat/ChatInput';
-import MarkdownPanel from '../../components/markdown/MarkdownPanel';
-import Header from '../../components/layout/Header';
-import ChatSidebar from '../../components/chat/ChatSidebar';
-import { useMarkdownPanel } from '../../hooks/useMarkdownPanel';
-import { useUserLevel } from '../../hooks/useUserLevel';
-import { useSessionManager } from '../../hooks/useSessionManager';
-import { useChatHandler } from '../../hooks/useChatHandler';
-import { techDemoSections, techTemplateSections } from '../../data/tech-demo-sections';
-import { techDefaultMessages } from '../../data/default-messages';
+import ChatMessages from '../../../components/chat/ChatMessages';
+import ChatInput from '../../../components/chat/ChatInput';
+import MarkdownPanel from '../../../components/markdown/MarkdownPanel';
+import Header from '../../../components/layout/Header';
+import { useMarkdownPanel } from '../../../hooks/useMarkdownPanel';
+import { useUserLevel } from '../../../hooks/useUserLevel';
+import { useSessionManager } from '../../../hooks/useSessionManager';
+import { useChatHandler } from '../../../hooks/useChatHandler';
+import { techDemoSections, techTemplateSections } from '../../../data/tech-demo-sections';
+import { techDefaultMessages } from '../../../data/default-messages';
 
 
 export default function CodePage() {
 
   const {
-    currentSessionId,
     messages,
     sections,
     isFirstMessage,
@@ -25,8 +23,6 @@ export default function CodePage() {
     setSections,
     setIsFirstMessage,
     autoSaveSession,
-    handleLoadSession,
-    handleNewChat,
     handleSessionFromUrl,
     handleEditNotification
   } = useSessionManager({
@@ -134,54 +130,41 @@ export default function CodePage() {
 
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Chat Sidebar */}
-      <ChatSidebar
-        appType="app"
-        currentSessionId={currentSessionId}
-        onLoadSession={(session) => {
-          const systemMessage = techDefaultMessages[0];
-          handleLoadSession(session, systemMessage);
-        }}
-        onNewChat={handleNewChat}
+    <div className="grid grid-cols-2 h-screen">
+      {/* Chat Panel */}
+      <div className="border-r border-gray-200 flex flex-col bg-white h-screen shadow-sm">
+      <Header
+        title="vibeアプリ.md - 技術仕様書AI"
+        appSwitchUrl="/"
+        appSwitchLabel="💼 vibe起業"
       />
       
-      <div className="flex-1 grid grid-cols-2">
-        {/* Chat Panel */}
-        <div className="border-r border-gray-200 flex flex-col bg-white h-screen shadow-sm">
-        <Header
-          title="vibeアプリ.md - 技術仕様書AI"
-          appSwitchUrl="/"
-          appSwitchLabel="💼 vibe起業"
-          userLevel={userLevel}
-          onUserLevelChange={setUserLevel}
-        />
-        
-        <ChatMessages
-          messages={messages}
-          isLoading={isLoading}
-          chatEndRef={chatEndRef}
-        />
+      <ChatMessages
+        messages={messages}
+        isLoading={isLoading}
+        chatEndRef={chatEndRef}
+      />
 
-        <ChatInput
-          input={input}
-          isLoading={isLoading}
-          placeholder="アプリのアイデアや要望を入力してください...（⌘+Enter で送信）"
-          onInputChange={setInput}
-          onSubmit={handleSubmit}
-        />
-      </div>
+      <ChatInput
+        input={input}
+        isLoading={isLoading}
+        placeholder="アプリのアイデアや要望を入力してください...（⌘+Enter で送信）"
+        onInputChange={setInput}
+        onSubmit={handleSubmit}
+      />
+    </div>
 
-        {/* Markdown Panel */}
-        <MarkdownPanel
-        copySuccess={copySuccess}
-        sections={sections}
-        onCopy={handleCopy}
-        onExport={() => handleExport('技術仕様書')}
-        onSectionUpdate={handleSectionUpdate}
-        onEditNotification={handleEditNotification}
-        />
-      </div>
+      {/* Markdown Panel */}
+      <MarkdownPanel
+      copySuccess={copySuccess}
+      sections={sections}
+      onCopy={handleCopy}
+      onExport={() => handleExport('技術仕様書')}
+      onSectionUpdate={handleSectionUpdate}
+      onEditNotification={handleEditNotification}
+      userLevel={userLevel}
+      onUserLevelChange={setUserLevel}
+      />
     </div>
   );
 }
