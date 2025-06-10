@@ -21,3 +21,8 @@ When user says "push", follow this complete workflow:
 4. Push the branch to remote
 5. Create a pull request using `gh pr create`
 6. **プルリクエスト確認**: `open <PR_URL>`コマンドでブラウザでプルリクエストを開く
+
+## 重要ルール
+- **プルリクエスト作成時は必ずopenまで実行すること**
+- ユーザーから「push」と言われた場合は、上記Push Workflowの6番目のopenコマンドまで必ず実行する
+- プルリクエストのURLが表示されたら、必ず`open <URL>`コマンドでブラウザで開く
