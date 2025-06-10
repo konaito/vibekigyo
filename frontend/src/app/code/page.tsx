@@ -7,7 +7,6 @@ import ChatInput from '../../components/chat/ChatInput';
 import MarkdownPanel from '../../components/markdown/MarkdownPanel';
 import Header from '../../components/layout/Header';
 import { useMarkdownPanel } from '../../hooks/useMarkdownPanel';
-import { formUrl } from '../../lib/form-url';
 import { techDemoSections, techTemplateSections } from '../../data/tech-demo-sections';
 
 
@@ -435,29 +434,6 @@ export default function CodePage() {
             content: message 
           }]);
         }}
-        extraActions={
-          <button
-            onClick={() => {
-              try {
-                // Google Formに技術仕様書データを送信
-                const url = formUrl(sections);
-                console.log('Generated form URL:', url);
-                console.log('URL length:', url.length);
-                // if (url.length > 8000) {
-                //   alert('技術仕様書の内容が長すぎます。内容を短縮してからお試しください。');
-                //   return;
-                // }
-                window.open(url, '_blank');
-              } catch (error) {
-                console.error('Error generating form URL:', error);
-                alert('フォームURLの生成でエラーが発生しました。');
-              }
-            }}
-            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md"
-          >
-            アプリを作成する
-          </button>
-        }
       />
     </div>
   );
