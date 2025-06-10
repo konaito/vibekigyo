@@ -1,0 +1,454 @@
+Skip to content
+
+OpenRouter
+Search
+/
+Models
+Chat
+Rankings
+Docs
+
+Avatar for undefined
+OpenAI: GPT-4o Search Preview
+openai/gpt-4o-search-preview
+
+Chat
+Compare
+Created Mar 12, 2025
+128,000 context
+Starting at $2.50/M input tokens
+Starting at $10/M output tokens
+$3.613/K input imgs
+$35/K reqs
+GPT-4o Search Previewis a specialized model for web search in Chat Completions. It is trained to understand and execute web search queries.
+
+Overview
+Providers
+Apps
+Activity
+Uptime
+API
+Providers for GPT-4o Search Preview
+
+OpenRouter routes requests to the best providers that are able to handle your prompt size and parameters, with fallbacks to maximize uptime. 
+OpenAI
+
+US
+Context
+128K
+Max Output
+16K
+Input
+$2.50
+Output
+$10
+Latency
+2.77
+s
+Throughput
+139.6
+tps
+Uptime
+
+Throughput
+
+Latency
+
+Apps using GPT-4o Search Preview
+
+Top public apps this week using this model
+1.
+Favicon for https://litellm.ai/
+liteLLM 
+Open-source library to simplify LLM calls
+4.41Mtokens
+2.
+Favicon for https://openrouter.ai/chat
+OpenRouter: Chatroom 
+Chat with multiple LLMs at once
+1.21Mtokens
+3.
+Favicon for https://openwebui.com/
+Open WebUI 
+Extensible, self-hosted AI interface
+872Ktokens
+4.
+Favicon for https://fudan.edu.cn/
+Fudan University Research 
+new
+649Ktokens
+5.
+Favicon for https://msty.app/
+Msty 
+new
+544Ktokens
+6.
+Favicon for https://bothub.chat/
+BotHub 
+Multi-model ChatGPT
+524Ktokens
+7.
+Favicon for https://auto-import-tool.com/
+Auto Import Product Tool 
+new
+470Ktokens
+8.
+Favicon for https://cline.bot/
+Cline 
+Autonomous coding agent right in your IDE
+445Ktokens
+9.
+Favicon for https://cherry-ai.com/
+Cherry Studio 
+new
+350Ktokens
+10.
+Favicon for https://nim.video/
+nim.video 
+new
+333Ktokens
+11.
+Favicon for https://github.com/workflow_writer
+Workflow Writer 
+new
+304Ktokens
+12.
+Favicon for https://librechat.ai/
+LibreChat 
+Feature-rich, open-source ChatGPT clone
+269Ktokens
+13.
+Favicon for https://llm.datasette.io/
+LLM 
+A CLI and Python library for LLMs
+172Ktokens
+14.
+Favicon for https://magicmuse.io/
+MagicMuse.io 
+new
+160Ktokens
+15.
+Favicon for https://sillytavern.app/
+SillyTavern 
+LLM frontend for power users
+108Ktokens
+16.
+Favicon for https://yoursite.com/
+YourAppName 
+new
+78Ktokens
+17.
+Favicon for https://boltai.com/
+PDF Pals 
+new
+75Ktokens
+18.
+Favicon for https://docs.google.com/
+docs.google.com 
+new
+70Ktokens
+19.
+Favicon for https://n8n-cannabis-automation.local/
+N8N German Content Generation 
+new
+56Ktokens
+20.
+Favicon for https://kimundo.com/
+Kimundo AI-SEO Analyzer 
+new
+54Ktokens
+Recent activity on GPT-4o Search Preview
+
+Tokens processed per day
+Mar 11
+Mar 19
+Mar 27
+Apr 4
+Apr 12
+Apr 20
+Apr 28
+May 6
+May 14
+May 22
+May 30
+Jun 7
+0
+10M
+20M
+30M
+40M
+Uptime stats for GPT-4o Search Preview
+
+Uptime stats for GPT-4o Search Preview on the only provider
+
+When an error occurs in an upstream provider, we can recover by routing to another healthy provider, if your request filters allow it.
+
+Learn more about our load balancing and customization options.
+
+
+Sample code and API for GPT-4o Search Preview
+
+OpenRouter normalizes requests and responses across providers for you.
+Create API key
+OpenRouter provides an OpenAI-compatible completion API to 400+ models & providers that you can call directly, or using the OpenAI SDK. Additionally, some third-party SDKs are available.
+
+In the examples below, the OpenRouter-specific headers are optional. Setting them allows your app to appear on the OpenRouter leaderboards.
+
+openai-python
+python
+typescript
+openai-typescript
+curl
+
+Copy
+from openai import OpenAI
+
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key="<OPENROUTER_API_KEY>",
+)
+
+completion = client.chat.completions.create(
+  extra_headers={
+    "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
+    "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+  },
+  extra_body={},
+  model="openai/gpt-4o-search-preview",
+  messages=[
+    {
+      "role": "user",
+      "content": "What is the meaning of life?"
+    }
+  ]
+)
+print(completion.choices[0].message.content)
+Using third-party SDKs
+For information about using third-party SDKs and frameworks with OpenRouter, please see our frameworks documentation.
+
+See the Request docs for all possible fields, and Parameters for explanations of specific sampling parameters.
+
+More models from OpenAI
+Codex Mini
+codex-mini-latest is a fine-tuned version of o4-mini specifically for use in Codex CLI. For direct use in the API, we recommend starting with gpt-4.1.
+
+o4 Mini High
+OpenAI o4-mini-high is the same model as o4-mini with reasoning_effort set to high.
+
+OpenAI o4-mini is a compact reasoning model in the o-series, optimized for fast, cost-efficient performance while retaining strong multimodal and agentic capabilities. It supports tool use and demonstrates competitive reasoning and coding performance across benchmarks like AIME (99.5% with Python) and SWE-bench, outperforming its predecessor o3-mini and even approaching o3 in some domains.
+
+Despite its smaller size, o4-mini exhibits high accuracy in STEM tasks, visual problem solving (e.g., MathVista, MMMU), and code editing. It is especially well-suited for high-throughput scenarios where latency or cost is critical. Thanks to its efficient architecture and refined reinforcement learning training, o4-mini can chain tools, generate structured outputs, and solve multi-step tasks with minimal delay—often in under a minute.
+
+o3
+o3 is a well-rounded and powerful model across domains. It sets a new standard for math, science, coding, and visual reasoning tasks. It also excels at technical writing and instruction-following. Use it to think through multi-step problems that involve analysis across text, code, and images. Note that BYOK is required for this model. Set up here: https://openrouter.ai/settings/integrations
+
+o4 Mini
+OpenAI o4-mini is a compact reasoning model in the o-series, optimized for fast, cost-efficient performance while retaining strong multimodal and agentic capabilities. It supports tool use and demonstrates competitive reasoning and coding performance across benchmarks like AIME (99.5% with Python) and SWE-bench, outperforming its predecessor o3-mini and even approaching o3 in some domains.
+
+Despite its smaller size, o4-mini exhibits high accuracy in STEM tasks, visual problem solving (e.g., MathVista, MMMU), and code editing. It is especially well-suited for high-throughput scenarios where latency or cost is critical. Thanks to its efficient architecture and refined reinforcement learning training, o4-mini can chain tools, generate structured outputs, and solve multi-step tasks with minimal delay—often in under a minute.
+
+GPT-4.1
+GPT-4.1 is a flagship large language model optimized for advanced instruction following, real-world software engineering, and long-context reasoning. It supports a 1 million token context window and outperforms GPT-4o and GPT-4.5 across coding (54.6% SWE-bench Verified), instruction compliance (87.4% IFEval), and multimodal understanding benchmarks. It is tuned for precise code diffs, agent reliability, and high recall in large document contexts, making it ideal for agents, IDE tooling, and enterprise knowledge retrieval.
+
+GPT-4.1 Mini
+GPT-4.1 Mini is a mid-sized model delivering performance competitive with GPT-4o at substantially lower latency and cost. It retains a 1 million token context window and scores 45.1% on hard instruction evals, 35.8% on MultiChallenge, and 84.1% on IFEval. Mini also shows strong coding ability (e.g., 31.6% on Aider’s polyglot diff benchmark) and vision understanding, making it suitable for interactive applications with tight performance constraints.
+
+GPT-4.1 Nano
+For tasks that demand low latency, GPT‑4.1 nano is the fastest and cheapest model in the GPT-4.1 series. It delivers exceptional performance at a small size with its 1 million token context window, and scores 80.1% on MMLU, 50.3% on GPQA, and 9.8% on Aider polyglot coding – even higher than GPT‑4o mini. It’s ideal for tasks like classification or autocompletion.
+
+o1-pro
+The o1 series of models are trained with reinforcement learning to think before they answer and perform complex reasoning. The o1-pro model uses more compute to think harder and provide consistently better answers.
+
+GPT-4o-mini Search Preview
+GPT-4o mini Search Preview is a specialized model for web search in Chat Completions. It is trained to understand and execute web search queries.
+
+GPT-4.5
+GPT-4.5 (Preview) is a research preview of OpenAI’s latest language model, designed to advance capabilities in reasoning, creativity, and multi-turn conversation. It builds on previous iterations with improvements in world knowledge, contextual coherence, and the ability to follow user intent more effectively.
+
+The model demonstrates enhanced performance in tasks that require open-ended thinking, problem-solving, and communication. Early testing suggests it is better at generating nuanced responses, maintaining long-context coherence, and reducing hallucinations compared to earlier versions.
+
+This research preview is intended to help evaluate GPT-4.5’s strengths and limitations in real-world use cases as OpenAI continues to refine and develop future models. Read more at the blog post here.
+
+o3 Mini High
+OpenAI o3-mini-high is the same model as o3-mini with reasoning_effort set to high.
+
+o3-mini is a cost-efficient language model optimized for STEM reasoning tasks, particularly excelling in science, mathematics, and coding. The model features three adjustable reasoning effort levels and supports key developer capabilities including function calling, structured outputs, and streaming, though it does not include vision processing capabilities.
+
+The model demonstrates significant improvements over its predecessor, with expert testers preferring its responses 56% of the time and noting a 39% reduction in major errors on complex questions. With medium reasoning effort settings, o3-mini matches the performance of the larger o1 model on challenging reasoning evaluations like AIME and GPQA, while maintaining lower latency and cost.
+
+o3 Mini
+OpenAI o3-mini is a cost-efficient language model optimized for STEM reasoning tasks, particularly excelling in science, mathematics, and coding.
+
+This model supports the reasoning_effort parameter, which can be set to "high", "medium", or "low" to control the thinking time of the model. The default is "medium". OpenRouter also offers the model slug openai/o3-mini-high to default the parameter to "high".
+
+The model features three adjustable reasoning effort levels and supports key developer capabilities including function calling, structured outputs, and streaming, though it does not include vision processing capabilities.
+
+The model demonstrates significant improvements over its predecessor, with expert testers preferring its responses 56% of the time and noting a 39% reduction in major errors on complex questions. With medium reasoning effort settings, o3-mini matches the performance of the larger o1 model on challenging reasoning evaluations like AIME and GPQA, while maintaining lower latency and cost.
+
+o1
+The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding. The o1 model series is trained with large-scale reinforcement learning to reason using chain of thought.
+
+The o1 models are optimized for math, science, programming, and other STEM-related tasks. They consistently exhibit PhD-level accuracy on benchmarks in physics, chemistry, and biology. Learn more in the launch announcement.
+
+GPT-4o
+The 2024-11-20 version of GPT-4o offers a leveled-up creative writing ability with more natural, engaging, and tailored writing to improve relevance & readability. It’s also better at working with uploaded files, providing deeper insights & more thorough responses.
+
+GPT-4o ("o" for "omni") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of GPT-4 Turbo while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.
+
+o1-preview
+The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding.
+
+The o1 models are optimized for math, science, programming, and other STEM-related tasks. They consistently exhibit PhD-level accuracy on benchmarks in physics, chemistry, and biology. Learn more in the launch announcement.
+
+Note: This model is currently experimental and not suitable for production use-cases, and may be heavily rate-limited.
+
+o1-preview
+The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding.
+
+The o1 models are optimized for math, science, programming, and other STEM-related tasks. They consistently exhibit PhD-level accuracy on benchmarks in physics, chemistry, and biology. Learn more in the launch announcement.
+
+Note: This model is currently experimental and not suitable for production use-cases, and may be heavily rate-limited.
+
+o1-mini
+The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding.
+
+The o1 models are optimized for math, science, programming, and other STEM-related tasks. They consistently exhibit PhD-level accuracy on benchmarks in physics, chemistry, and biology. Learn more in the launch announcement.
+
+Note: This model is currently experimental and not suitable for production use-cases, and may be heavily rate-limited.
+
+o1-mini
+The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding.
+
+The o1 models are optimized for math, science, programming, and other STEM-related tasks. They consistently exhibit PhD-level accuracy on benchmarks in physics, chemistry, and biology. Learn more in the launch announcement.
+
+Note: This model is currently experimental and not suitable for production use-cases, and may be heavily rate-limited.
+
+ChatGPT-4o
+OpenAI ChatGPT 4o is continually updated by OpenAI to point to the current version of GPT-4o used by ChatGPT. It therefore differs slightly from the API version of GPT-4o in that it has additional RLHF. It is intended for research and evaluation.
+
+OpenAI notes that this model is not suited for production use-cases as it may be removed or redirected to another model in the future.
+
+GPT-4o
+The 2024-08-06 version of GPT-4o offers improved performance in structured outputs, with the ability to supply a JSON schema in the respone_format. Read more here.
+
+GPT-4o ("o" for "omni") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of GPT-4 Turbo while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.
+
+For benchmarking against other models, it was briefly called "im-also-a-good-gpt2-chatbot"
+
+GPT-4o-mini
+GPT-4o mini is OpenAI's newest model after GPT-4 Omni, supporting both text and image inputs with text outputs.
+
+As their most advanced small model, it is many multiples more affordable than other recent frontier models, and more than 60% cheaper than GPT-3.5 Turbo. It maintains SOTA intelligence, while being significantly more cost-effective.
+
+GPT-4o mini achieves an 82% score on MMLU and presently ranks higher than GPT-4 on chat preferences common leaderboards.
+
+Check out the launch announcement to learn more.
+
+#multimodal
+
+GPT-4o-mini
+GPT-4o mini is OpenAI's newest model after GPT-4 Omni, supporting both text and image inputs with text outputs.
+
+As their most advanced small model, it is many multiples more affordable than other recent frontier models, and more than 60% cheaper than GPT-3.5 Turbo. It maintains SOTA intelligence, while being significantly more cost-effective.
+
+GPT-4o mini achieves an 82% score on MMLU and presently ranks higher than GPT-4 on chat preferences common leaderboards.
+
+Check out the launch announcement to learn more.
+
+#multimodal
+
+GPT-4o
+GPT-4o ("o" for "omni") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of GPT-4 Turbo while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.
+
+For benchmarking against other models, it was briefly called "im-also-a-good-gpt2-chatbot"
+
+#multimodal
+
+GPT-4o
+GPT-4o ("o" for "omni") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of GPT-4 Turbo while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.
+
+For benchmarking against other models, it was briefly called "im-also-a-good-gpt2-chatbot"
+
+#multimodal
+
+GPT-4 Turbo
+The latest GPT-4 Turbo model with vision capabilities. Vision requests can now use JSON mode and function calling.
+
+Training data: up to December 2023.
+
+GPT-3.5 Turbo
+GPT-3.5 Turbo is OpenAI's fastest model. It can understand and generate natural language or code, and is optimized for chat and traditional completion tasks.
+
+Training data up to Sep 2021.
+
+GPT-4 Turbo Preview
+The preview GPT-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Training data: up to Dec 2023.
+
+Note: heavily rate limited by OpenAI while in preview.
+
+GPT-4 Vision
+Ability to understand images, in addition to all other GPT-4 Turbo capabilties. Training data: up to Apr 2023.
+
+Note: heavily rate limited by OpenAI while in preview.
+
+#multimodal
+
+GPT-3.5 Turbo 16k
+An older GPT-3.5 Turbo model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Training data: up to Sep 2021.
+
+GPT-4 Turbo
+The latest GPT-4 Turbo model with vision capabilities. Vision requests can now use JSON mode and function calling.
+
+Training data: up to April 2023.
+
+GPT-3.5 Turbo Instruct
+This model is a variant of GPT-3.5 Turbo tuned for instructional prompts and omitting chat-related optimizations. Training data: up to Sep 2021.
+
+GPT-3.5 Turbo 16k
+This model offers four times the context length of gpt-3.5-turbo, allowing it to support approximately 20 pages of text in a single request at a higher cost. Training data: up to Sep 2021.
+
+GPT-4 32k
+GPT-4-32k is an extended version of GPT-4, with the same capabilities but quadrupled context length, allowing for processing up to 40 pages of text in a single pass. This is particularly beneficial for handling longer content like interacting with PDFs without an external vector database. Training data: up to Sep 2021.
+
+GPT-4 32k
+GPT-4-32k is an extended version of GPT-4, with the same capabilities but quadrupled context length, allowing for processing up to 40 pages of text in a single pass. This is particularly beneficial for handling longer content like interacting with PDFs without an external vector database. Training data: up to Sep 2021.
+
+GPT-3.5 Turbo
+GPT-3.5 Turbo is OpenAI's fastest model. It can understand and generate natural language or code, and is optimized for chat and traditional completion tasks.
+
+Training data up to Sep 2021.
+
+GPT-3.5 Turbo
+GPT-3.5 Turbo is OpenAI's fastest model. It can understand and generate natural language or code, and is optimized for chat and traditional completion tasks.
+
+Training data up to Sep 2021.
+
+GPT-3.5 Turbo 16k
+The latest GPT-3.5 Turbo model with improved instruction following, JSON mode, reproducible outputs, parallel function calling, and more. Training data: up to Sep 2021.
+
+This version has a higher accuracy at responding in requested formats and a fix for a bug which caused a text encoding issue for non-English language function calls.
+
+GPT-4
+OpenAI's flagship model, GPT-4 is a large-scale multimodal language model capable of solving difficult problems with greater accuracy than previous models due to its broader general knowledge and advanced reasoning capabilities. Training data: up to Sep 2021.
+
+GPT-4
+GPT-4-0314 is the first version of GPT-4 released, with a context length of 8,192 tokens, and was supported until June 14. Training data: up to Sep 2021.
+
+Previous slideNext slide
+
+Status
+Announcements
+Docs
+Partners
+Careers
+Pricing
+Privacy
+Terms
+ 
+© 2023 – 2025 OpenRouter, Inc
+
+
+
+
+GPT-4o Search Preview - API, Providers, Stats | OpenRouter
+0
