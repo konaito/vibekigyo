@@ -23,7 +23,7 @@ export async function callOpenAI(
       'Authorization': `Bearer ${openrouterapikey}`,
       'Content-Type': 'application/json; charset=utf-8',
       'HTTP-Referer': process.env.NODE_ENV === 'production' 
-        ? 'https://vibe-kigyo.vercel.app' 
+        ? 'https://vibekigyomd.vercel.app' 
         : 'http://localhost:3000',
       'X-Title': appName
     },
