@@ -219,7 +219,7 @@ const templateSections: Sections = {
 | 目的 | 未定 |`,
   '🎯 ターゲットユーザー': '- 未定',
   '💡 主な機能': '- 未定',
-  '🛠 技術スタック': '- 未定',
+  '👥 チーム・役割': '- 未定',
   '📅 スケジュール': '- 未定',
 };
 
@@ -232,7 +232,23 @@ export default function Home() {
     },
     {
       role: 'assistant',
-      content: 'こんにちは！👋 私はあなたの事業アイデアを企画書に仕上げるAIパートナーです。\n\n右側にはvibe起業.mdのデモ企画書が表示されていますが、あなたの新しいアイデアを聞かせてください！\n\n• どんな事業を考えていますか？\n• 解決したい課題はありますか？\n• 既に何かプロダクトのアイデアはありますか？\n\n何でも気軽に話しかけてください。最初のメッセージで新しい企画書作成を開始します！✨'
+      content: `# こんにちは！👋 
+
+私はあなたの事業アイデアを企画書に仕上げる**AIパートナー**です。
+
+## 🔍 最新市場情報にアクセス可能
+**web検索機能**で競合分析、市場規模、投資動向などをリアルタイム調査できます
+
+右側にはvibe起業.mdのデモ企画書が表示されていますが、あなたの新しいアイデアを聞かせてください！
+
+### 質問例：
+- どんな事業を考えていますか？
+- 解決したい課題はありますか？  
+- 既に何かプロダクトのアイデアはありますか？
+
+市場調査や競合分析もリアルタイムで行いながら、データに基づいた企画書を一緒に作成しましょう！
+
+> 最初のメッセージで新しい企画書作成を開始します！✨`
     }
   ]);
   const [sections, setSections] = useState<Sections>(demoSections);
@@ -299,15 +315,9 @@ export default function Home() {
           
         case 'update':
           // Markdown更新のみの場合
-          if (data.markdown && data.markdown.trim() !== '') {
-            try {
-              console.log('Parsing markdown JSON string:', data.markdown);
-              const parsedMarkdown = JSON.parse(data.markdown);
-              console.log('Updating sections with:', parsedMarkdown);
-              setSections(prev => ({ ...prev, ...parsedMarkdown }));
-            } catch (error) {
-              console.error('Error parsing markdown JSON:', error);
-            }
+          if (data.markdown && Object.keys(data.markdown).length > 0) {
+            console.log('Updating sections with markdown object:', data.markdown);
+            setSections(prev => ({ ...prev, ...data.markdown }));
           }
           setMessages(prev => [...prev, { 
             role: 'assistant', 
@@ -317,15 +327,9 @@ export default function Home() {
           
         case 'chat+update':
           // 会話とMarkdown更新の両方の場合
-          if (data.markdown && data.markdown.trim() !== '') {
-            try {
-              console.log('Parsing markdown JSON string:', data.markdown);
-              const parsedMarkdown = JSON.parse(data.markdown);
-              console.log('Updating sections with:', parsedMarkdown);
-              setSections(prev => ({ ...prev, ...parsedMarkdown }));
-            } catch (error) {
-              console.error('Error parsing markdown JSON:', error);
-            }
+          if (data.markdown && Object.keys(data.markdown).length > 0) {
+            console.log('Updating sections with markdown object:', data.markdown);
+            setSections(prev => ({ ...prev, ...data.markdown }));
           }
           setMessages(prev => [...prev, { 
             role: 'assistant', 
@@ -373,7 +377,23 @@ export default function Home() {
         },
         {
           role: 'assistant',
-          content: 'こんにちは！👋 私はあなたの事業アイデアを企画書に仕上げるAIパートナーです。\n\n右側にはvibe起業.mdのデモ企画書が表示されていますが、あなたの新しいアイデアを聞かせてください！\n\n• どんな事業を考えていますか？\n• 解決したい課題はありますか？\n• 既に何かプロダクトのアイデアはありますか？\n\n何でも気軽に話しかけてください。最初のメッセージで新しい企画書作成を開始します！✨'
+          content: `# こんにちは！👋 
+
+私はあなたの事業アイデアを企画書に仕上げる**AIパートナー**です。
+
+## 🔍 最新市場情報にアクセス可能
+**web検索機能**で競合分析、市場規模、投資動向などをリアルタイム調査できます
+
+右側にはvibe起業.mdのデモ企画書が表示されていますが、あなたの新しいアイデアを聞かせてください！
+
+### 質問例：
+- どんな事業を考えていますか？
+- 解決したい課題はありますか？  
+- 既に何かプロダクトのアイデアはありますか？
+
+市場調査や競合分析もリアルタイムで行いながら、データに基づいた企画書を一緒に作成しましょう！
+
+> 最初のメッセージで新しい企画書作成を開始します！✨`
         }
       ]);
       setSections(demoSections);
