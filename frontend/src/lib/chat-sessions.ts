@@ -43,11 +43,6 @@ export class ChatSessionManager {
     return data.sessions
   }
 
-  // 特定のチャットセッションを取得
-  static async getSession(id: string): Promise<ChatSession> {
-    const data = await this.request(`/api/chat-sessions/${id}`)
-    return data.session
-  }
 
   // 新しいチャットセッションを作成
   static async createSession(
@@ -110,5 +105,17 @@ export class ChatSessionManager {
       const session = await this.createSession(appType, messages, markdownContent)
       return session.id
     }
+  }
+
+  // 単一のセッションを取得
+  static async getSession(sessionId: string): Promise<ChatSession | null> {
+    const response = await fetch(`/api/chat-sessions/${sessionId}`)
+    
+    if (!response.ok) {
+      console.error('Failed to get session')
+      return null
+    }
+
+    return response.json()
   }
 }

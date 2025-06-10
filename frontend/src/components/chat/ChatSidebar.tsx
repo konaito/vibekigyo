@@ -10,7 +10,7 @@ interface ChatSidebarProps {
   onNewChat: () => void;
 }
 
-export default function ChatSidebar({ currentSessionId, onLoadSession, onNewChat }: ChatSidebarProps) {
+export default function ChatSidebar({ appType, currentSessionId, onLoadSession, onNewChat }: ChatSidebarProps) {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -155,7 +155,17 @@ export default function ChatSidebar({ currentSessionId, onLoadSession, onNewChat
               return (
                 <div
                   key={session.id}
-                  onClick={() => onLoadSession(session)}
+                  onClick={() => {
+                    // 現在のページと異なるタイプのセッションの場合、適切なページに遷移
+                    if (session.app_type !== appType) {
+                      const targetUrl = session.app_type === 'business' ? '/' : '/code';
+                      // セッションIDをURLパラメータとして渡す
+                      window.location.href = `${targetUrl}?session=${session.id}`;
+                    } else {
+                      // 同じタイプの場合は通常通りロード
+                      onLoadSession(session);
+                    }
+                  }}
                   className={`group relative cursor-pointer rounded-lg transition-all duration-200 ${
                     isActive 
                       ? 'bg-blue-100 border border-blue-200' 
