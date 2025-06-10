@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { MarkdownPanelProps } from '../../types/chat';
 
 export default function MarkdownPanel({ 
-  title, 
   copySuccess, 
   sections,
   onCopy, 
@@ -12,7 +11,7 @@ export default function MarkdownPanel({
   onSectionUpdate,
   onEditNotification,
   extraActions 
-}: MarkdownPanelProps) {
+}: Omit<MarkdownPanelProps, 'title'>) {
   const [editingTitle, setEditingTitle] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [editingContent, setEditingContent] = useState<string | null>(null);
