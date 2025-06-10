@@ -8,252 +8,7 @@ import MarkdownPanel from '../../components/markdown/MarkdownPanel';
 import Header from '../../components/layout/Header';
 import { useMarkdownPanel } from '../../hooks/useMarkdownPanel';
 import { formUrl } from '../../lib/form-url';
-
-const demoSections: Sections = {
-  '💡 はじめに': `右側にはデモアプリ技術仕様書が表示されています。最初のメッセージで新しいプロジェクト用にリセットされます。`,
-  
-  '📌 プロジェクト概要': `| 項目 | 内容 |
-|------|------|
-| アプリ名 | vibe起業.md / vibeアプリ.md |
-| プラットフォーム | Web (Next.js) |
-| 技術スタック | Next.js 15, TypeScript, Tailwind CSS, OpenRouter API |
-| 開発期間 | 2ヶ月 |
-| チーム構成 | フルスタック開発者1名 |`,
-
-  '🛠 技術仕様': `### フロントエンド技術スタック
-- **Next.js 15.3.3** + TypeScript (App Router)
-- **React 19** (最新バージョン)
-- **Tailwind CSS 4** + Typography Plugin (スタイリング)
-- **React Markdown** + remark-gfm (マークダウンレンダリング)
-- **Bun** (JavaScript runtime & package manager)
-
-### API・外部サービス
-- **OpenRouter API** (openai/gpt-4o-search-preview)
-- **構造化出力** (JSON Schema validation)
-- **Web検索機能** (GPT-4o search preview)
-- **クライアントサイドAPI** (fetch + error handling)
-
-### データ管理
-- **React State** (useState, useEffect)
-- **LocalStorage** (アプリ間データ連携)
-- **Session Storage** (一時的なデータ保存)
-- **URL Parameters** (アプリ間ナビゲーション)
-
-### デプロイ・開発環境
-- **Vercel** (本番環境デプロイ)
-- **GitHub** (ソースコード管理)
-- **VS Code** + TypeScript (開発環境)
-- **ESLint** + Prettier (コード品質管理)`,
-
-  '🎨 UI/UX設計': `### デザインシステム
-- **Tailwind CSS**: ユーティリティファーストなCSS
-- **Gradient背景**: モダンなビジュアルデザイン
-- **Typography Plugin**: 読みやすいMarkdown表示
-- **カラーパレット**: Blue系を基調とした統一感
-
-### コンポーネント設計
-- **再利用可能コンポーネント**: ChatMessages, ChatInput, MarkdownPanel, Header
-- **カスタムHook**: useMarkdownPanel (状態管理)
-- **TypeScript Interface**: 型安全なprops定義
-- **共通レイアウト**: 2分割グリッドレイアウト
-
-### レスポンシブ対応
-- **Desktop First**: 1024px〜の2カラムレイアウト
-- **Grid System**: CSS Grid による柔軟なレイアウト
-- **チャット UI**: モバイルライクなメッセージ表示
-- **マークダウンパネル**: エディタライクな右パネル
-
-### アクセシビリティ対応
-- **Semantic HTML**: 適切なHTMLタグ使用
-- **Focus Management**: キーボードナビゲーション
-- **Color Contrast**: 十分なコントラスト比
-- **Screen Reader**: ARIA labels適用`,
-
-  '⚡ 機能仕様・API設計': `### コア機能の技術実装
-- **AI対話機能**: OpenRouter API + streaming responses
-- **マークダウン生成**: 構造化出力 + JSON Schema
-- **リアルタイム編集**: React state + 即座の UI 更新
-- **アプリ間連携**: LocalStorage + URL parameters
-
-### API設計（エンドポイント、データ形式）
-\`\`\`typescript
-// Business Planning API
-POST /api/apply-instruction
-{
-  instruction: string,
-  sections: Record<string, string>,
-  messages: Message[]
-}
-
-// Technical Planning API  
-POST /api/generate-plan
-{
-  instruction: string,
-  sections: Record<string, string>,
-  messages: Message[]
-}
-
-// Response Format
-{
-  type: 'chat' | 'update' | 'chat+update',
-  message: string,
-  markdown?: Record<string, string>
-}
-\`\`\`
-
-### 状態管理設計
-- **React State**: messages, sections, isLoading
-- **Custom Hook**: useMarkdownPanel
-- **LocalStorage**: アプリ間データ転送
-- **URL State**: ナビゲーション状態管理
-
-### データフロー
-1. **User Input** → Component State
-2. **API Call** → OpenRouter API
-3. **JSON Response** → State update
-4. **UI Update** → Chat + Markdown panel
-5. **Export** → LocalStorage → App navigation`,
-
-  '📱 画面・コンポーネント設計': `### 主要画面の技術仕様
-- **ビジネス企画画面** (/): ChatMessages + MarkdownPanel
-- **技術仕様画面** (/code): 同一構造で異なるプロンプト
-- **共通ヘッダー**: アプリ切り替え + クリア機能
-- **レスポンシブ**: CSS Grid による2カラムレイアウト
-
-### 共通コンポーネント設計
-\`\`\`typescript
-interface ChatMessagesProps {
-  messages: Message[]
-  isLoading: boolean
-  chatEndRef: React.RefObject<HTMLDivElement>
-}
-
-interface MarkdownPanelProps {
-  title: string
-  sections: Sections
-  onCopy: () => void
-  onExport: () => void
-  extraActions?: React.ReactNode
-}
-\`\`\`
-
-### パフォーマンス最適化
-- **React.memo**: 不要な再レンダリング防止
-- **useCallback**: 関数メモ化
-- **Lazy Loading**: ReactMarkdown dynamic import
-- **Code Splitting**: ページ単位での分割
-- **Image Optimization**: Next.js built-in optimization`,
-
-  '📅 開発スケジュール・実装計画': `### 技術セットアップ期間 (Week 1)
-- **Repository Setup**: Next.js 15 + TypeScript setup
-- **API Integration**: OpenRouter API + environment config
-- **UI Framework**: Tailwind CSS + component library
-- **Development Tools**: ESLint + Prettier + Git setup
-
-### 機能別実装スケジュール
-**Phase 1: Core Features (Week 2-4)**
-- Week 2: Basic chat UI + markdown rendering
-- Week 3: AI integration + structured outputs
-- Week 4: Business planning prompts + UX polish
-
-**Phase 2: Advanced Features (Week 5-6)**
-- Week 5: Technical planning app + dual app architecture
-- Week 6: App-to-app integration + export functionality
-
-**Phase 3: Polish & Deploy (Week 7-8)**
-- Week 7: Performance optimization + error handling
-- Week 8: Final testing + production deployment
-
-### テスト・デプロイ戦略
-- **Manual Testing**: Browser compatibility + UX testing
-- **TypeScript**: Type safety + compile-time error checking
-- **Staging Deploy**: Vercel preview deployments
-- **Production**: Vercel automatic deployments
-
-### 技術的マイルストーン
-- **M1**: Basic chat + markdown working
-- **M2**: AI integration + structured responses
-- **M3**: Dual app architecture complete
-- **M4**: Production ready + performance optimized`,
-
-  '🔧 開発・運用戦略': `### 開発環境・ツール
-- **IDE**: VS Code + TypeScript + Tailwind CSS extensions
-- **Version Control**: Git + GitHub (main branch workflow)
-- **Package Manager**: Bun (fast JavaScript runtime)
-- **Local Development**: Next.js dev server + hot reload
-
-### コード品質管理
-- **TypeScript**: strict mode + type safety
-- **ESLint**: Next.js recommended config
-- **Prettier**: automatic code formatting
-- **Git Hooks**: 手動でのコード品質チェック
-- **Manual Review**: 小規模プロジェクトのため手動レビュー
-
-### テスト戦略
-- **Manual Testing**: 機能テスト + ユーザビリティテスト
-- **TypeScript**: コンパイル時の型チェック
-- **Browser Testing**: Chrome, Firefox, Safari compatibility
-- **API Testing**: Postman + manual endpoint testing
-- **Performance**: Lighthouse + Core Web Vitals
-
-### CI/CD・デプロイ戦略
-- **GitHub Integration**: Vercel automatic deployments
-- **Preview Deployments**: Pull request previews
-- **Production**: main branch auto-deploy to Vercel
-- **Rollback**: Git revert + automatic re-deploy
-
-### 監視・ログ・エラー対応
-- **Console Logging**: クライアントサイド error handling
-- **Vercel Analytics**: 基本的なパフォーマンス監視
-- **Manual Monitoring**: ユーザーフィードバック + issue tracking
-- **Error Boundaries**: React error handling
-- **API Error Handling**: try/catch + user-friendly messages`,
-
-  '⚠️ 技術的リスク・課題': `### API依存リスク
-- **OpenRouter API障害**: サービス停止リスク
-  - 対策: error handling + fallback messages + retry logic
-- **API料金**: 大量利用時のコスト増加
-  - 対策: rate limiting + usage monitoring + cost alerts
-- **レスポンス時間**: AI処理の遅延
-  - 対策: loading states + user feedback + timeout handling
-
-### セキュリティリスク
-- **API Key漏洩**: 環境変数の不適切な管理
-  - 対策: .env.local + .gitignore + Vercel環境変数
-- **XSS攻撃**: マークダウンレンダリングの脆弱性
-  - 対策: react-markdown sanitization + CSP headers
-- **CSRF攻撃**: API endpoint への不正アクセス
-  - 対策: SameSite cookies + origin validation
-
-### パフォーマンス課題
-- **大量チャット履歴**: メモリ使用量増加
-  - 対策: message limit + pagination + cleanup
-- **マークダウンレンダリング**: 複雑な文書の処理
-  - 対策: lazy loading + debounced updates + memoization
-- **Bundle Size**: JavaScript bundle の肥大化
-  - 対策: code splitting + tree shaking + dynamic imports
-
-### 技術的制約・対策
-- **ブラウザ互換性**: 古いブラウザでの動作
-  - 対策: modern browsers support + graceful degradation
-- **LocalStorage制限**: データサイズ制限 (5-10MB)
-  - 対策: data compression + cleanup + size monitoring
-- **Single Point of Failure**: Vercel 依存リスク
-  - 対策: backup deployment strategy + monitoring`
-};
-
-const templateSections: Sections = {
-  '📌 プロジェクト概要': `| 項目 | 内容 |
-|------|------|
-| アプリ名 | 未定 |
-| プラットフォーム | 未定 |
-| 技術スタック | 未定 |`,
-  '🛠 技術仕様': '- 未定',
-  '🎨 UI/UX設計': '- 未定',
-  '⚡ 機能仕様・API設計': '- 未定',
-  '📱 画面・コンポーネント設計': '- 未定',
-  '📅 開発スケジュール・実装計画': '- 未定',
-};
+import { techDemoSections, techTemplateSections } from '../../data/tech-demo-sections';
 
 
 export default function CodePage() {
@@ -287,7 +42,7 @@ export default function CodePage() {
 > 最初のメッセージで新しい技術仕様書作成を開始します！🔧`
     }
   ]);
-  const [sections, setSections] = useState<Sections>(demoSections);
+  const [sections, setSections] = useState<Sections>(techDemoSections);
   const [isFirstMessage, setIsFirstMessage] = useState(true);
   
   const {
@@ -457,7 +212,7 @@ export default function CodePage() {
 
     // 最初のメッセージの場合、テンプレートにリセット
     if (isFirstMessage) {
-      setSections(templateSections);
+      setSections(techTemplateSections);
       setIsFirstMessage(false);
     }
 
@@ -573,7 +328,7 @@ export default function CodePage() {
 > 最初のメッセージで新しい技術仕様書作成を開始します！🔧`
         }
       ]);
-      setSections(demoSections);
+      setSections(techDemoSections);
       setIsFirstMessage(true);
     }
   };
