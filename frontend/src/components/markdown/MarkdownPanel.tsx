@@ -52,15 +52,27 @@ export default function MarkdownPanel({
 
   const handleContentSave = useCallback(() => {
     if (editingContent) {
-      onSectionUpdate(editingContent, newContent);
-      
-      // チャットに編集通知を送信
-      const preview = newContent.length > 50 ? newContent.substring(0, 50) + '...' : newContent;
-      onEditNotification?.(`「${editingContent}」セクションの内容を編集しました: ${preview}`);
+      // 空のコンテンツの場合は削除確認
+      if (newContent.trim() === '') {
+        if (confirm(`「${editingContent}」セクションを削除しますか？`)) {
+          onSectionUpdate(editingContent, '');
+          onEditNotification?.(`「${editingContent}」セクションを削除しました。`);
+        } else {
+          // キャンセルされた場合は元の内容を復元
+          setNewContent(sections[editingContent] || '');
+          return;
+        }
+      } else {
+        onSectionUpdate(editingContent, newContent);
+        
+        // チャットに編集通知を送信
+        const preview = newContent.length > 50 ? newContent.substring(0, 50) + '...' : newContent;
+        onEditNotification?.(`「${editingContent}」セクションの内容を編集しました: ${preview}`);
+      }
     }
     setEditingContent(null);
     setNewContent('');
-  }, [editingContent, newContent, onSectionUpdate, onEditNotification]);
+  }, [editingContent, newContent, sections, onSectionUpdate, onEditNotification]);
 
   const handleContentCancel = useCallback(() => {
     setEditingContent(null);
@@ -122,6 +134,7 @@ export default function MarkdownPanel({
               key={sectionTitle} 
               className="mb-4 p-4 rounded-xl transition-all duration-300 hover:border-2 hover:border-blue-300 hover:bg-blue-50/30 hover:shadow-lg hover:scale-[1.02] group border-2 border-transparent"
             >
+              <div className="flex items-center justify-between">
               {editingTitle === sectionTitle ? (
                 <div className="border-b-2 border-blue-200 pb-2 mb-4 mt-0 flex items-center space-x-2">
                   <input
@@ -156,6 +169,20 @@ export default function MarkdownPanel({
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-sm">✏️</span>
                 </h2>
               )}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`「${sectionTitle}」セクションを削除しますか？`)) {
+                      onSectionUpdate(sectionTitle, '');
+                      onEditNotification?.(`「${sectionTitle}」セクションを削除しました。`);
+                    }
+                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-2 py-1 text-red-600 hover:bg-red-100 rounded text-sm"
+                  title="セクションを削除"
+                >
+                  🗑️ 削除
+                </button>
+              </div>
 
               {editingContent === sectionTitle ? (
                 <div className="space-y-2">
@@ -181,7 +208,8 @@ export default function MarkdownPanel({
                     </button>
                   </div>
                   <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-200">
-                    💡 <strong>Markdown記法:</strong> **太字**、*斜体*、`コード`、[リンク](URL)、## 見出し、- リスト項目
+                    💡 <strong>Markdown記法:</strong> **太字**、*斜体*、`コード`、[リンク](URL)、## 見出し、- リスト項目<br/>
+                    🗑️ <strong>削除:</strong> 内容を空にして保存するとセクションが削除されます
                   </div>
                 </div>
               ) : (

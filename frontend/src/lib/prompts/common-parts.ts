@@ -26,7 +26,8 @@ export const outputFormatSection = `# 出力形式 (Output Format)
 // JSON形式の共通ルール
 export const jsonRulesSection = `# 最重要ルール
 - **\`markdown\`フィールドは、JSONオブジェクトそのものです。文字列ではありません。**
-- \`markdown\`プロパティは、更新がない場合は省略してください。`;
+- \`markdown\`プロパティは、更新がない場合は省略してください。
+- **セクション削除**: \`markdown\`オブジェクト内で、セクションの値を空文字列("")に設定すると、そのセクションが削除されます。`;
 
 // 現在の状況共有部分
 export const currentStateSection = () => `# 現在の企画書の状況
@@ -69,7 +70,8 @@ export const businessOutputExamples = `# 出力形式 (Output Format)
       "message": "企画書の更新内容を簡潔に示すメッセージ（例：ターゲット顧客の解像度を高め、反映しました。）",
       "markdown": {
         "更新するセクションタイトル1": "更新後のコンテンツ1\\n箇条書き1\\n箇条書き2",
-        "更新するセクションタイトル2": "更新後のコンテンツ2"
+        "更新するセクションタイトル2": "更新後のコンテンツ2",
+        "削除するセクションタイトル": ""
       }
     }
 
@@ -78,7 +80,8 @@ export const businessOutputExamples = `# 出力形式 (Output Format)
       "type": "chat+update",
       "message": "ユーザーへの対話メッセージ（例：素晴らしい視点ですね！その内容を反映しつつ、次は競合について考えてみませんか？）",
       "markdown": {
-        "更新するセクションタイトル": "更新後のコンテンツ"
+        "更新するセクションタイトル": "更新後のコンテンツ",
+        "削除するセクションタイトル": ""
       }
     }`;
 

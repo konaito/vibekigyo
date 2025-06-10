@@ -317,7 +317,18 @@ export default function Home() {
           // Markdown更新のみの場合
           if (data.markdown && Object.keys(data.markdown).length > 0) {
             console.log('Updating sections with markdown object:', data.markdown);
-            setSections(prev => ({ ...prev, ...data.markdown }));
+            setSections(prev => {
+              const updated = { ...prev };
+              Object.entries(data.markdown as Record<string, string>).forEach(([key, value]) => {
+                if (value === '') {
+                  // 空文字列の場合はセクションを削除
+                  delete updated[key];
+                } else {
+                  updated[key] = value;
+                }
+              });
+              return updated;
+            });
           }
           setMessages(prev => [...prev, { 
             role: 'assistant', 
@@ -329,7 +340,18 @@ export default function Home() {
           // 会話とMarkdown更新の両方の場合
           if (data.markdown && Object.keys(data.markdown).length > 0) {
             console.log('Updating sections with markdown object:', data.markdown);
-            setSections(prev => ({ ...prev, ...data.markdown }));
+            setSections(prev => {
+              const updated = { ...prev };
+              Object.entries(data.markdown as Record<string, string>).forEach(([key, value]) => {
+                if (value === '') {
+                  // 空文字列の場合はセクションを削除
+                  delete updated[key];
+                } else {
+                  updated[key] = value;
+                }
+              });
+              return updated;
+            });
           }
           setMessages(prev => [...prev, { 
             role: 'assistant', 
