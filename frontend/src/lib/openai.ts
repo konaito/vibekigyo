@@ -1,5 +1,7 @@
 // OpenAI API呼び出しの共通ライブラリ
 
+import { openrouterapikey } from "./config";
+
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -8,21 +10,17 @@ interface Message {
 interface OpenAIResponse {
   type: 'chat' | 'update' | 'chat+update';
   message: string;
-  markdown: string | object;
+  markdown?: Record<string, string>;
 }
 
 export async function callOpenAI(
   messages: Message[],
   appName: string = 'vibe-app'
 ): Promise<OpenAIResponse> {
-  if (!process.env.OPENROUTER_API_KEY) {
-    throw new Error('OPENROUTER_API_KEY is not set in environment variables');
-  }
-
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      'Authorization': `Bearer ${openrouterapikey}`,
       'Content-Type': 'application/json; charset=utf-8',
       'HTTP-Referer': process.env.NODE_ENV === 'production' 
         ? 'https://vibe-kigyo.vercel.app' 
@@ -30,7 +28,7 @@ export async function callOpenAI(
       'X-Title': appName
     },
     body: JSON.stringify({
-      model: 'openai/gpt-4o',
+      model: 'openai/gpt-4o-search-preview',
       messages,
       response_format: {
         type: "json_schema",
@@ -43,24 +41,26 @@ export async function callOpenAI(
               type: {
                 type: "string",
                 enum: ["chat", "update", "chat+update"],
-                description: "レスポンスのタイプ"
+                description: "Response type indicating whether to chat, update markdown, or both"
               },
               message: {
                 type: "string",
-                description: "ユーザーへの返答メッセージ"
+                description: "Message to display to the user"
               },
               markdown: {
-                type: "string",
-                description: "更新するセクションのJSONオブジェクト文字列"
+                type: "object",
+                description: "Sections to update in the markdown document",
+                additionalProperties: {
+                  type: "string"
+                }
               }
             },
-            required: ["type", "message", "markdown"],
+            required: ["type", "message"],
             additionalProperties: false
           }
         }
       },
-      temperature: 0.7,
-      max_tokens: 2000
+      temperature: 0.7
     })
   });
 
@@ -75,7 +75,19 @@ export async function callOpenAI(
 
   const data = await response.json();
   const content = data.choices[0].message.content;
-  return JSON.parse(content);
+  
+  try {
+    return JSON.parse(content);
+  } catch (parseError) {
+    console.error('Failed to parse OpenAI response as JSON:', parseError);
+    console.error('Raw content:', content);
+    
+    // Return a fallback response
+    return {
+      type: 'chat',
+      message: 'AIからの応答の解析でエラーが発生しました。もう一度お試しください。'
+    };
+  }
 }
 
 export function createSystemPrompt(promptContent: string, sections: Record<string, string>): Message {
