@@ -38,7 +38,9 @@ export default function CodePage() {
 
 最新の技術動向を調査しながら、実装可能な技術仕様書を作成します。
 
-**💡 推奨技術スタック**: Flutter + Supabase + Next.js (簡単で高品質なアプリ開発)
+**💡 ヒント：**
+- **事業プランから考えたい**場合は → [💼 vibe起業](/)で事業企画書を作成してからエクスポート
+- **アプリアイデアが具体的**な場合は → このまま技術仕様書作成を進めましょう！
 
 > 最初のメッセージで新しい技術仕様書作成を開始します！🔧`
     }
@@ -69,9 +71,15 @@ export default function CodePage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          throw new Error(`APIエラーが発生しました (ステータス: ${response.status})`);
+        }
         console.error('API Error:', errorData);
-        throw new Error(errorData.details || errorData.error || 'Failed to get response');
+        throw new Error(errorData.details || errorData.error || `APIエラーが発生しました (ステータス: ${response.status})`);
       }
 
       const data = await response.json();
@@ -251,9 +259,15 @@ export default function CodePage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          throw new Error(`APIエラーが発生しました (ステータス: ${response.status})`);
+        }
         console.error('API Error:', errorData);
-        throw new Error(errorData.details || errorData.error || 'Failed to get response');
+        throw new Error(errorData.details || errorData.error || `APIエラーが発生しました (ステータス: ${response.status})`);
       }
 
       const data = await response.json();
@@ -369,7 +383,9 @@ export default function CodePage() {
 
 最新の技術動向を調査しながら、実装可能な技術仕様書を作成します。
 
-**💡 推奨技術スタック**: Flutter + Supabase + Next.js (簡単で高品質なアプリ開発)
+**💡 ヒント：**
+- **事業プランから考えたい**場合は → [💼 vibe起業](/)で事業企画書を作成してからエクスポート
+- **アプリアイデアが具体的**な場合は → このまま技術仕様書作成を進めましょう！
 
 > 最初のメッセージで新しい技術仕様書作成を開始します！🔧`
         }

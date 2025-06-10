@@ -7,9 +7,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { instruction, sections, messages } = body;
 
-    // Debug logging
-    console.log('API Key exists:', !!process.env.OPENROUTER_API_KEY);
-    console.log('API Key length:', process.env.OPENROUTER_API_KEY?.length);
 
     const systemPrompt = createSystemPrompt(businessPrompt, sections);
 
@@ -20,8 +17,19 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error in apply-instruction:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    
+    // より詳細なエラー情報をログ出力
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error stack:', error.stack);
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to process instruction', details: errorMessage },
+      { 
+        error: 'Failed to process instruction', 
+        details: errorMessage,
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     );
   }

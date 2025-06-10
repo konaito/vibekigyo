@@ -34,6 +34,10 @@ export default function Home() {
 
 市場調査や競合分析もリアルタイムで行いながら、データに基づいた企画書を一緒に作成しましょう！
 
+**💡 ヒント：**
+- **具体的な事業アイデア**が決まっている場合は → [📱 vibeアプリ](/code)でプロダクト設計を開始
+- **事業アイデアから考えたい**場合は → このまま企画書作成を進めましょう！
+
 > 最初のメッセージで新しい企画書作成を開始します！✨`
     }
   ]);
@@ -81,9 +85,15 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          throw new Error(`APIエラーが発生しました (ステータス: ${response.status})`);
+        }
         console.error('API Error:', errorData);
-        throw new Error(errorData.details || errorData.error || 'Failed to get response');
+        throw new Error(errorData.details || errorData.error || `APIエラーが発生しました (ステータス: ${response.status})`);
       }
 
       const data = await response.json();
@@ -200,6 +210,10 @@ export default function Home() {
 - 既に何かプロダクトのアイデアはありますか？
 
 市場調査や競合分析もリアルタイムで行いながら、データに基づいた企画書を一緒に作成しましょう！
+
+**💡 ヒント：**
+- **具体的な事業アイデア**が決まっている場合は → [📱 vibeアプリ](/code)でプロダクト設計を開始
+- **事業アイデアから考えたい**場合は → このまま企画書作成を進めましょう！
 
 > 最初のメッセージで新しい企画書作成を開始します！✨`
         }
