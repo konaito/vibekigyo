@@ -277,7 +277,7 @@ export default function MarkdownPanel({
       }
       
       // PDFを保存
-      pdf.save(`${title || 'document'}.pdf`);
+      pdf.save('document.pdf');
       
       // クリーンアップ
       root.unmount();
