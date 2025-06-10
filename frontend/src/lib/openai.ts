@@ -28,7 +28,7 @@ export async function callOpenAI(
       'X-Title': appName
     },
     body: JSON.stringify({
-      model: 'openai/gpt-4o:online',
+      model: 'openai/o3',
       messages,
       response_format: {
         type: "json_schema",
