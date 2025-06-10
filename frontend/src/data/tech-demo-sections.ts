@@ -1,6 +1,8 @@
 import { Sections } from '../types/chat';
 
 export const techDemoSections: Sections = {
+  '💡 はじめに': `右側にはデモ技術仕様書が表示されています。最初のメッセージで新しいプロジェクト用にリセットされます。`,
+
   '📌 プロジェクト概要': `| 項目 | 内容 |
 |------|------|
 | プロジェクト名 | vibeアプリ.md |
