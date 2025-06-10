@@ -26,7 +26,7 @@ export async function GET(
       return NextResponse.json({ error: 'Chat session not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ session: data })
+    return NextResponse.json(data)
   } catch (error) {
     console.error('API Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

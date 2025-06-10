@@ -1,58 +1,39 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
-import { Message, Sections } from '../types/chat';
+import { useState, useRef, useEffect } from 'react';
 import ChatMessages from '../components/chat/ChatMessages';
 import ChatInput from '../components/chat/ChatInput';
 import MarkdownPanel from '../components/markdown/MarkdownPanel';
 import Header from '../components/layout/Header';
 import ChatSidebar from '../components/chat/ChatSidebar';
 import { useMarkdownPanel } from '../hooks/useMarkdownPanel';
+import { useSessionManager } from '../hooks/useSessionManager';
+import { useChatHandler } from '../hooks/useChatHandler';
 import { businessDemoSections, businessTemplateSections } from '../data/business-demo-sections';
-import { ChatSession } from '../lib/chat-sessions';
-import { SessionManager } from '../lib/session-manager';
+import { businessDefaultMessages } from '../data/default-messages';
 
 
 export default function Home() {
-  const sessionManager = useMemo(() => new SessionManager('business'), []);
-  
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'system',
-      content: 'あなたはプロダクトマネージャーの書記です。ユーザーの発言を受けて、適切なMarkdownセクションを更新してください。'
-    },
-    {
-      role: 'assistant',
-      content: `# こんにちは！👋 
 
-私はあなたの事業アイデアを企画書に仕上げる**AIパートナー**です。
+  const {
+    currentSessionId,
+    messages,
+    sections,
+    isFirstMessage,
+    setMessages,
+    setSections,
+    setIsFirstMessage,
+    autoSaveSession,
+    handleLoadSession,
+    handleNewChat,
+    handleSessionFromUrl,
+    handleEditNotification
+  } = useSessionManager({
+    appType: 'business',
+    defaultSections: businessDemoSections,
+    defaultMessages: businessDefaultMessages
+  });
 
-## 🔍 最新市場情報にアクセス可能
-**web検索機能**で競合分析、市場規模、投資動向などをリアルタイム調査できます
-
-右側にはvibe起業.mdのデモ企画書が表示されていますが、あなたの新しいアイデアを聞かせてください！
-
-### 質問例：
-- どんな事業を考えていますか？
-- 解決したい課題はありますか？  
-- 既に何かプロダクトのアイデアはありますか？
-
-市場調査や競合分析もリアルタイムで行いながら、データに基づいた企画書を一緒に作成しましょう！
-
-**💡 ヒント：**
-- **具体的な事業アイデア**が決まっている場合は → [📱 vibeアプリ](/code)でプロダクト設計を開始
-- **事業アイデアから考えたい**場合は → このまま企画書作成を進めましょう！
-
-> 最初のメッセージで新しい企画書作成を開始します！✨`
-    }
-  ]);
-  const [sections, setSections] = useState<Sections>(businessDemoSections);
-  const [isFirstMessage, setIsFirstMessage] = useState(true);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
-  
   const {
     copySuccess,
     handleCopy,
@@ -60,226 +41,41 @@ export default function Home() {
     handleSectionUpdate
   } = useMarkdownPanel(sections, setSections);
 
+  // 統合されたチャット処理ハンドラー（business用）
+  const { isLoading, handleChatSubmit } = useChatHandler({
+    messages,
+    sections,
+    isFirstMessage,
+    templateSections: businessTemplateSections,
+    setMessages,
+    setSections,
+    setIsFirstMessage,
+    autoSaveSession,
+    apiEndpoint: '/api/apply-instruction'
+    // userLevelはbusinessでは使用しない
+  });
+
+  const [input, setInput] = useState('');
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // チャットセッションの自動保存
-  const autoSaveSession = async (newMessages?: Message[], forceSections?: Sections) => {
-    try {
-      const sessionId = await sessionManager.autoSave(
-        messages,
-        sections,
-        newMessages,
-        forceSections
-      );
+  // URLパラメータからセッション読み込み
+  useEffect(() => {
+    const systemMessage = businessDefaultMessages[0];
+    handleSessionFromUrl(systemMessage);
+  }, [handleSessionFromUrl]);
 
-      if (!currentSessionId) {
-        setCurrentSessionId(sessionId);
-        sessionManager.setCurrentSessionId(sessionId);
-      }
-    } catch (error) {
-      console.error('Auto-save failed:', error);
-    }
-  };
-
-  // セッション読み込み処理
-  const handleLoadSession = (session: ChatSession) => {
-    const systemMessage: Message = {
-      role: 'system',
-      content: 'あなたはプロダクトマネージャーの書記です。ユーザーの発言を受けて、適切なMarkdownセクションを更新してください。'
-    };
-    
-    sessionManager.loadSession(
-      session,
-      setCurrentSessionId,
-      setMessages,
-      setSections,
-      systemMessage
-    );
-    
-    setIsFirstMessage(false);
-  };
-
-  // 新しいチャットを開始
-  const handleNewChat = () => {
-    const defaultMessages: Message[] = [
-      {
-        role: 'system' as const,
-        content: 'あなたはプロダクトマネージャーの書記です。ユーザーの発言を受けて、適切なMarkdownセクションを更新してください。'
-      },
-      {
-        role: 'assistant' as const,
-        content: `# こんにちは！👋 
-
-私はあなたの事業アイデアを企画書に仕上げる**AIパートナー**です。
-
-## 🔍 最新市場情報にアクセス可能
-**web検索機能**で競合分析、市場規模、投資動向などをリアルタイム調査できます
-
-右側にはvibe起業.mdのデモ企画書が表示されていますが、あなたの新しいアイデアを聞かせてください！
-
-### 質問例：
-- どんな事業を考えていますか？
-- 解決したい課題はありますか？  
-- 既に何かプロダクトのアイデアはありますか？
-
-市場調査や競合分析もリアルタイムで行いながら、データに基づいた企画書を一緒に作成しましょう！
-
-**💡 ヒント：**
-- **具体的な事業アイデア**が決まっている場合は → [📱 vibeアプリ](/code)でプロダクト設計を開始
-- **事業アイデアから考えたい**場合は → このまま企画書作成を進めましょう！
-
-> 最初のメッセージで新しい企画書作成を開始します！✨`
-      }
-    ];
-
-    sessionManager.startNewChat(
-      setCurrentSessionId,
-      setIsFirstMessage,
-      setSections,
-      setMessages,
-      businessDemoSections,
-      defaultMessages
-    );
-  };
-
+  // 統合されたチャット送信処理
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim()) return;
 
     const userMessage = input.trim();
     setInput('');
-    const newMessages = [...messages, { role: 'user' as const, content: userMessage }];
-    setMessages(newMessages);
-    setIsLoading(true);
-    
-    // 2. チャットが送信されたタイミングで保存
-    await autoSaveSession(newMessages);
-
-    // 最初のメッセージの場合、テンプレートにリセット
-    if (isFirstMessage) {
-      setSections(businessTemplateSections);
-      setIsFirstMessage(false);
-    }
-
-    try {
-      const response = await fetch('/api/apply-instruction', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          instruction: userMessage,
-          sections,
-          messages: [...messages, { role: 'user', content: userMessage }]
-        }),
-      });
-
-      if (!response.ok) {
-        let errorData;
-        try {
-          errorData = await response.json();
-        } catch (parseError) {
-          console.error('Failed to parse error response:', parseError);
-          throw new Error(`APIエラーが発生しました (ステータス: ${response.status})`);
-        }
-        console.error('API Error:', errorData);
-        throw new Error(errorData.details || errorData.error || `APIエラーが発生しました (ステータス: ${response.status})`);
-      }
-
-      const data = await response.json();
-      console.log('Full API response:', data);
-      
-      // 新しい3タイプのレスポンス形式に対応
-      let finalMessages = newMessages;
-      let finalSections = sections;
-      
-      switch (data.type) {
-        case 'chat':
-          // 会話のみの場合
-          finalMessages = [...newMessages, { 
-            role: 'assistant', 
-            content: data.message 
-          }];
-          setMessages(finalMessages);
-          break;
-          
-        case 'update':
-          // Markdown更新のみの場合
-          if (data.markdown && Object.keys(data.markdown).length > 0) {
-            console.log('Updating sections with markdown object:', data.markdown);
-            finalSections = { ...sections };
-            Object.entries(data.markdown as Record<string, string>).forEach(([key, value]) => {
-              if (value === '') {
-                // 空文字列の場合はセクションを削除
-                delete finalSections[key];
-              } else {
-                finalSections[key] = value;
-              }
-            });
-            setSections(finalSections);
-          }
-          finalMessages = [...newMessages, { 
-            role: 'assistant', 
-            content: data.message 
-          }];
-          setMessages(finalMessages);
-          break;
-          
-        case 'chat+update':
-          // 会話とMarkdown更新の両方の場合
-          if (data.markdown && Object.keys(data.markdown).length > 0) {
-            console.log('Updating sections with markdown object:', data.markdown);
-            finalSections = { ...sections };
-            Object.entries(data.markdown as Record<string, string>).forEach(([key, value]) => {
-              if (value === '') {
-                // 空文字列の場合はセクションを削除
-                delete finalSections[key];
-              } else {
-                finalSections[key] = value;
-              }
-            });
-            setSections(finalSections);
-          }
-          finalMessages = [...newMessages, { 
-            role: 'assistant', 
-            content: data.message 
-          }];
-          setMessages(finalMessages);
-          break;
-          
-        default:
-          // 旧形式のレスポンスとの互換性維持
-          if (data.updated) {
-            finalSections = { ...sections, ...data.updated };
-            setSections(finalSections);
-            const updatedSections = Object.keys(data.updated);
-            finalMessages = [...newMessages, { 
-              role: 'assistant', 
-              content: `更新しました: ${updatedSections.join(', ')}\n\n${updatedSections.map(section => `【${section}】\n${data.updated[section].split('\n').slice(0, 3).join('\n')}${data.updated[section].split('\n').length > 3 ? '\n...' : ''}`).join('\n\n')}` 
-            }];
-            setMessages(finalMessages);
-          } else {
-            finalMessages = [...newMessages, { 
-              role: 'assistant', 
-              content: '理解しました。何か具体的な更新が必要でしたらお知らせください。' 
-            }];
-            setMessages(finalMessages);
-          }
-      }
-      
-      // 3. AIからの返信が返ってきたタイミングで保存
-      await autoSaveSession(finalMessages, finalSections);
-    } catch (error) {
-      console.error('Error:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: error instanceof Error 
-          ? error.message 
-          : 'エラーが発生しました。もう一度お試しください。' 
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
+    await handleChatSubmit(userMessage);
   };
 
 
@@ -291,7 +87,10 @@ export default function Home() {
       <ChatSidebar
         appType="business"
         currentSessionId={currentSessionId}
-        onLoadSession={handleLoadSession}
+        onLoadSession={(session) => {
+          const systemMessage = businessDefaultMessages[0];
+          handleLoadSession(session, systemMessage);
+        }}
         onNewChat={handleNewChat}
       />
       
@@ -326,19 +125,7 @@ export default function Home() {
         onCopy={handleCopy}
         onExport={() => handleExport('企画書')}
         onSectionUpdate={handleSectionUpdate}
-        onEditNotification={async (message) => {
-          const newMessages = [...messages, { 
-            role: 'user' as const, 
-            content: message 
-          }];
-          setMessages(newMessages);
-          
-          // 1. MDの変更がチャット欄に反映されたタイミングで保存
-          // 少し遅延させて最新のsectionsを確実に取得
-          setTimeout(async () => {
-            await autoSaveSession(newMessages);
-          }, 100);
-        }}
+        onEditNotification={handleEditNotification}
         extraActions={
           <button
             onClick={() => {
