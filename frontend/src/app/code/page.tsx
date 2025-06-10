@@ -62,7 +62,7 @@ export default function CodePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           instruction,
-          sections: templateSections, // 空のテンプレートから開始
+          sections: techTemplateSections, // 空のテンプレートから開始
           messages: messages
         }),
       });
