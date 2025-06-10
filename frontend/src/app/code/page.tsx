@@ -1,261 +1,238 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-
-interface Message {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
-
-interface Sections {
-  [key: string]: string;
-}
+import { Message, Sections } from '../../types/chat';
+import ChatMessages from '../../components/chat/ChatMessages';
+import ChatInput from '../../components/chat/ChatInput';
+import MarkdownPanel from '../../components/markdown/MarkdownPanel';
+import Header from '../../components/layout/Header';
+import { useMarkdownPanel } from '../../hooks/useMarkdownPanel';
 
 const demoSections: Sections = {
-  '💡 はじめに': `右側にはデモアプリ企画書が表示されています。最初のメッセージで新しいプロジェクト用にリセットされます。`,
+  '💡 はじめに': `右側にはデモアプリ技術仕様書が表示されています。最初のメッセージで新しいプロジェクト用にリセットされます。`,
   
   '📌 プロジェクト概要': `| 項目 | 内容 |
 |------|------|
 | アプリ名 | TaskMaster Pro |
-| カテゴリ | タスク管理・生産性向上 |
-| 対象プラットフォーム | Web (React), Mobile (React Native) |
+| プラットフォーム | iOS/Android (React Native), Web (Next.js) |
+| 技術スタック | TypeScript, React Native, Node.js, PostgreSQL |
 | 開発期間 | 6ヶ月 |
-| チーム規模 | フロントエンド2名、バックエンド2名、デザイナー1名 |`,
+| チーム構成 | フロントエンド2名、バックエンド2名、DevOps1名 |`,
 
-  '🎯 ターゲットユーザー': `### プライマリーユーザー
-- **働くプロフェッショナル** (25-45歳)
-  - 複数のプロジェクトを同時進行
-  - デジタルツールに慣れ親しんでいる
-  - 効率性と生産性を重視
-
-### セカンダリーユーザー
-- **フリーランサー・個人事業主**
-  - クライアントワークの管理が必要
-  - 時間追跡機能を重視
-  - 収益管理との連携を求める
-
-### ペルソナ例
-**田中美咲 (32歳, プロジェクトマネージャー)**
-- IT企業勤務、3つのプロジェクトを同時管理
-- 現在Trello、Slack、Excelを併用し非効率を感じている
-- チーム全体の進捗可視化が課題`,
-
-  '💎 価値提案': `### メインバリュー
-**「AIアシスタント搭載の次世代タスク管理で生産性を2倍に」**
-
-### 提供価値
-1. **統合管理**: タスク・時間・コミュニケーション・ファイルの一元管理
-2. **AI支援**: 自動優先度設定、スケジュール最適化、進捗予測
-3. **チーム協業**: リアルタイム同期、役割分担、進捗共有
-4. **インサイト**: 生産性分析、ボトルネック発見、改善提案
-
-### 既存ツールとの差別化
-- **Notion**: より直感的なUI、専門特化
-- **Asana**: AI機能の充実、日本語最適化
-- **Monday.com**: コスト効率、中小企業向け`,
-
-  '🛠 技術仕様': `### フロントエンド
-- **React 18** + TypeScript
-- **Next.js 14** (App Router)
-- **Tailwind CSS** + Shadcn/ui
+  '🛠 技術仕様': `### フロントエンド技術スタック
+- **React Native 0.72** + TypeScript
+- **Expo SDK 49** (開発・ビルド効率化)
+- **React Navigation 6** (画面遷移)
+- **React Query** (データキャッシュ・同期)
 - **Zustand** (状態管理)
-- **React Query** (データフェッチング)
+- **React Hook Form** (フォーム管理)
 
-### バックエンド
-- **Node.js** + Express.js
-- **PostgreSQL** (メインDB)
-- **Redis** (キャッシュ・セッション)
-- **Prisma ORM**
+### バックエンド技術スタック
+- **Node.js 18** + Express.js + TypeScript
+- **Prisma ORM** (型安全なDB操作)
+- **PostgreSQL 15** (メインデータベース)
+- **Redis** (セッション・キャッシュ)
 - **Socket.io** (リアルタイム通信)
+- **JWT** (認証トークン)
 
-### AI・機械学習
-- **OpenAI GPT-4** (タスク分析・提案)
-- **Python** + FastAPI (ML API)
-- **scikit-learn** (生産性予測)
+### データベース設計
+- **PostgreSQL**: ユーザー、タスク、プロジェクトデータ
+- **Redis**: セッション、リアルタイム同期、キャッシュ
+- **Prisma Schema**: 型安全なDB操作とマイグレーション
 
-### インフラ
-- **Vercel** (フロントエンド)
-- **Railway** (バックエンド)
-- **AWS S3** (ファイルストレージ)
-- **GitHub Actions** (CI/CD)`,
+### インフラ・デプロイ
+- **Vercel** (フロントエンドWeb版)
+- **Railway** (バックエンドAPI)
+- **Supabase** (PostgreSQL + 認証)
+- **GitHub Actions** (CI/CD)
+- **Expo EAS** (モバイルアプリビルド・配信)`,
 
-  '🎨 UI/UX設計': `### デザインコンセプト
-**「プロフェッショナルながら親しみやすい」**
+  '🎨 UI/UX設計': `### デザインシステム
+- **Design Tokens**: 色、タイポグラフィ、スペーシングの統一
+- **Component Library**: 再利用可能コンポーネント設計
+- **React Native Elements**: クロスプラットフォーム対応UI
+- **Tailwind CSS**: Web版スタイリング
 
-### カラーパレット
-- **プライマリー**: #2563eb (モダンブルー)
-- **セカンダリー**: #10b981 (成功グリーン)
-- **アクセント**: #f59e0b (アテンションオレンジ)
-- **ニュートラル**: #6b7280系 (グレー)
+### コンポーネント設計
+- **Atomic Design**: Atoms > Molecules > Organisms
+- **共通コンポーネント**: Button, Input, Card, Modal, Loading
+- **画面固有コンポーネント**: TaskCard, ProjectHeader, TimerWidget
+- **TypeScript Props**: 型安全なコンポーネントAPI
 
-### レスポンシブ設計
-- **Desktop**: サイドバー + メインコンテンツ
-- **Tablet**: 折りたたみ可能ナビゲーション
-- **Mobile**: ボトムタブナビゲーション
+### 画面遷移設計
+- **Stack Navigator**: 階層的な画面遷移
+- **Tab Navigator**: メイン機能へのアクセス
+- **Modal Navigator**: オーバーレイ画面
+- **Deep Linking**: 外部からの直接アクセス
 
-### 主要画面構成
-1. **ダッシュボード**: 今日のタスク・進捗・通知
-2. **プロジェクト管理**: カンバン・ガント・リスト表示
-3. **タイムトラッキング**: ポモドーロ・手動・自動記録
-4. **分析レポート**: 個人・チーム生産性
-5. **設定**: プロフィール・通知・連携`,
+### レスポンシブ対応
+- **Mobile First**: 320px〜の対応
+- **Tablet**: 768px〜のレイアウト調整
+- **Desktop**: 1024px〜のサイドバー表示
+- **Dynamic Type**: アクセシビリティ対応`,
 
-  '⚡ 主要機能一覧': `### Core機能
-- **タスク管理**: 作成・編集・削除・優先度・期限
-- **プロジェクト管理**: 階層構造・進捗追跡・マイルストーン
-- **時間追跡**: 手動・自動・ポモドーロタイマー
-- **コラボレーション**: コメント・ファイル共有・@メンション
+  '⚡ 機能仕様・API設計': `### コア機能の技術実装
+- **タスクCRUD**: REST API + optimistic updates
+- **リアルタイム同期**: Socket.io + Redis pub/sub
+- **オフライン対応**: React Query + AsyncStorage
+- **プッシュ通知**: Expo Notifications + FCM
 
-### AI機能
-- **自動優先度設定**: 期限・重要度から自動判定
-- **スケジュール最適化**: カレンダー連携で最適配置
-- **進捗予測**: 過去データから完了予測
-- **作業提案**: 最適なタスク順序を提案
+### API設計（エンドポイント、データ形式）
+\`\`\`typescript
+// Task API
+POST /api/tasks
+GET /api/tasks?project_id=123
+PUT /api/tasks/:id
+DELETE /api/tasks/:id
 
-### 連携機能
-- **カレンダー**: Google・Outlook・Apple Calendar
-- **コミュニケーション**: Slack・Teams・Discord
-- **ファイル**: Google Drive・Dropbox・OneDrive
-- **開発ツール**: GitHub・GitLab・Jira
+// WebSocket Events
+task:created, task:updated, task:deleted
+project:updated, user:joined
+\`\`\`
 
-### Premium機能
-- **高度な分析**: 詳細レポート・カスタムダッシュボード
-- **チーム管理**: 役割・権限・リソース管理
-- **API連携**: Webhook・REST API・Zapier
-- **優先サポート**: 24時間以内対応・専任サポート`,
+### 状態管理設計
+- **Zustand Store**: Global state (user, projects)
+- **React Query**: Server state + caching
+- **AsyncStorage**: Local persistence
+- **Context API**: Theme, language settings
 
-  '📅 開発スケジュール': `### Phase 1: MVP開発 (3ヶ月)
-**Month 1:**
-- プロジェクト設定・DB設計
-- 基本認証・ユーザー管理
-- タスクCRUD機能
+### データフロー
+1. **User Input** → Component State
+2. **API Call** → React Query mutation
+3. **Optimistic Update** → UI immediate feedback
+4. **Server Response** → State sync + error handling
+5. **WebSocket** → Real-time updates`,
 
-**Month 2:**
-- プロジェクト管理機能
-- 基本UI/UXの実装
-- レスポンシブ対応
+  '📱 画面・コンポーネント設計': `### 主要画面の技術仕様
+- **認証画面**: Auth0 + biometric authentication
+- **ダッシュボード**: FlatList + pull-to-refresh
+- **タスク詳細**: Modal + form validation
+- **プロジェクト一覧**: SectionList + search filtering
 
-**Month 3:**
-- 時間追跡機能
-- コラボレーション機能
-- βテスト開始
+### 共通コンポーネント設計
+\`\`\`typescript
+interface ButtonProps {
+  variant: 'primary' | 'secondary' | 'danger'
+  size: 'sm' | 'md' | 'lg'
+  loading?: boolean
+  onPress: () => void
+}
+\`\`\`
 
-### Phase 2: AI機能追加 (2ヶ月)
-**Month 4:**
-- AI優先度設定
-- スケジュール最適化
-- 進捗予測機能
+### パフォーマンス最適化
+- **FlatList**: virtualization for large lists
+- **Image Optimization**: lazy loading + caching
+- **Bundle Splitting**: lazy imports for screens
+- **Memory Management**: useCallback, useMemo
+- **Network**: request deduplication + retry logic`,
 
-**Month 5:**
-- AI作業提案
-- 分析レポート
-- 性能最適化
+  '📅 開発スケジュール・実装計画': `### 技術セットアップ期間 (Week 1-2)
+- **Repository Setup**: monorepo + Turborepo
+- **CI/CD Pipeline**: GitHub Actions + testing
+- **Database**: PostgreSQL + Prisma setup
+- **Authentication**: Supabase Auth integration
 
-### Phase 3: 統合・リリース (1ヶ月)
-**Month 6:**
-- 外部ツール連携
-- 最終テスト・バグ修正
-- 正式リリース
+### 機能別実装スケジュール
+**Phase 1: Core Features (Month 1-2)**
+- Week 3-4: User authentication + profile
+- Week 5-6: Task CRUD + basic UI
+- Week 7-8: Project management
+- Week 9-10: Real-time sync + WebSocket
 
-### 継続開発
-- ユーザーフィードバック対応
-- 新機能追加
-- 性能改善`,
+**Phase 2: Advanced Features (Month 3-4)**
+- Week 11-12: Time tracking + timers
+- Week 13-14: Notifications + offline sync
+- Week 15-16: Performance optimization
 
-  '💰 収益モデル': `### サブスクリプション
-**Free Plan (¥0/月)**
-- 個人利用のみ
-- プロジェクト3つまで
-- 基本機能のみ
+### テスト・デプロイ戦略
+- **Unit Tests**: Jest + React Testing Library
+- **E2E Tests**: Detox (React Native)
+- **API Tests**: Supertest + test database
+- **Staging Deploy**: automatic on PR merge
 
-**Pro Plan (¥980/月)**
-- 無制限プロジェクト
-- AI機能フル利用
-- 基本連携機能
+### 技術的マイルストーン
+- **M1**: Authentication + basic CRUD
+- **M2**: Real-time sync working
+- **M3**: Mobile app store ready
+- **M4**: Performance benchmarks met`,
 
-**Team Plan (¥2,980/月・5ユーザー)**
-- チーム機能
-- 高度な分析
-- 優先サポート
+  '🔧 開発・運用戦略': `### 開発環境・ツール
+- **IDE**: VS Code + extensions (Prettier, ESLint)
+- **Version Control**: Git + GitHub flow
+- **Package Manager**: npm + workspaces
+- **Local Development**: Docker Compose + hot reload
 
-**Enterprise (要相談)**
-- オンプレミス対応
-- カスタム機能
-- 専任サポート
+### コード品質管理
+- **TypeScript**: strict mode + no-implicit-any
+- **ESLint**: Airbnb config + custom rules
+- **Prettier**: automatic formatting
+- **Husky**: pre-commit hooks + lint-staged
+- **SonarQube**: code quality metrics
 
-### 収益予測 (1年目)
-- Free: 1,000ユーザー (0円)
-- Pro: 200ユーザー (235万円/年)
-- Team: 20チーム (71万円/年)
-- **合計**: 306万円/年
+### テスト戦略
+- **Unit Tests**: 80%+ coverage target
+- **Integration Tests**: API endpoint testing
+- **E2E Tests**: critical user flows
+- **Performance Tests**: load testing with k6
+- **Security Tests**: OWASP ZAP + dependency scanning
 
-### マネタイゼーション戦略
-1. **フリーミアム**: 無料で基本価値を体験
-2. **段階的アップグレード**: 使用量に応じた自然な移行
-3. **チーム導入**: 個人から組織への拡大
-4. **エコシステム**: 連携ツールとの収益シェア`,
+### CI/CD・デプロイ戦略
+- **GitHub Actions**: test → build → deploy
+- **Staging**: auto-deploy on PR merge
+- **Production**: manual approval + blue-green
+- **Rollback**: automated on health check failure
 
-  '📊 マーケティング戦略': `### ターゲット市場
-- **TAM**: 生産性ツール市場 $4.2B
-- **SAM**: タスク管理ツール $800M
-- **SOM**: 日本市場シェア 3% = $24M
+### 監視・ログ・エラー対応
+- **Application Monitoring**: Sentry for error tracking
+- **Performance**: New Relic APM
+- **Logs**: structured logging with Winston
+- **Metrics**: Prometheus + Grafana dashboards
+- **Alerts**: PagerDuty for critical issues`,
 
-### Go-to-Market戦略
-**Phase 1: Product Hunt & Early Adopters**
-- β版リリース・フィードバック収集
-- Product Hunt掲載
-- 技術ブログ・SNS発信
+  '⚠️ 技術的リスク・課題': `### パフォーマンス課題
+- **大量データ処理**: 10,000+ tasks per user
+  - 対策: DB indexing + pagination + lazy loading
+- **リアルタイム同期**: 100+ concurrent users
+  - 対策: Redis cluster + WebSocket scaling
+- **モバイルメモリ**: 低スペック端末対応
+  - 対策: code splitting + image optimization
 
-**Phase 2: Content Marketing**
-- 生産性向上に関するブログ
-- YouTube動画チュートリアル
-- ウェビナー・オンラインイベント
+### セキュリティリスク
+- **認証・認可**: JWT token management
+  - 対策: refresh token rotation + secure storage
+- **API Security**: rate limiting + CORS
+  - 対策: express-rate-limit + helmet.js
+- **データ暗号化**: PII protection
+  - 対策: encryption at rest + in transit (TLS 1.3)
 
-**Phase 3: Partnership & B2B**
-- スタートアップコミュニティ連携
-- 企業向け直接営業
-- 導入事例の作成・発信
+### スケーラビリティ課題
+- **Database**: read/write load distribution
+  - 対策: read replicas + connection pooling
+- **API Gateway**: traffic spike handling
+  - 対策: auto-scaling + circuit breaker pattern
+- **File Storage**: media content scaling
+  - 対策: CDN + compression + lazy loading
 
-### チャネル戦略
-- **デジタル**: SEO・SEM・SNS広告
-- **コンテンツ**: ブログ・動画・ポッドキャスト
-- **コミュニティ**: Discord・Reddit・専門フォーラム
-- **パートナー**: システム会社・コンサル会社`,
-
-  '⚠️ リスク・課題': `### 技術リスク
-- **スケーラビリティ**: ユーザー増加時の性能問題
-- **データセキュリティ**: 機密情報の保護
-- **AI依存**: 外部AI APIの変更・停止リスク
-
-### 市場リスク
-- **競合参入**: 大手企業による類似サービス
-- **経済状況**: 不況時のSaaS予算削減
-- **ユーザー行動変化**: リモートワーク減少
-
-### 対策
-- **技術**: マイクロサービス化・セキュリティ強化
-- **事業**: 差別化機能の継続開発
-- **財務**: 複数収益源・コスト構造最適化
-
-### 成功指標
-- **Month 3**: 100 MAU
-- **Month 6**: 500 MAU・10%有料転換
-- **Year 1**: 2,000 MAU・15%有料転換・¥500万ARR`
+### 技術的制約・対策
+- **React Native**: OS version compatibility
+  - 対策: minimum iOS 13+ / Android 8+
+- **Offline Support**: data sync complexity
+  - 対策: conflict resolution + incremental sync
+- **Cross-platform**: UI consistency
+  - 対策: shared component library + design tokens`
 };
 
 const templateSections: Sections = {
   '📌 プロジェクト概要': `| 項目 | 内容 |
 |------|------|
 | アプリ名 | 未定 |
-| カテゴリ | 未定 |
-| 対象プラットフォーム | 未定 |`,
-  '🎯 ターゲットユーザー': '- 未定',
-  '💎 価値提案': '- 未定',
+| プラットフォーム | 未定 |
+| 技術スタック | 未定 |`,
   '🛠 技術仕様': '- 未定',
-  '⚡ 主要機能': '- 未定',
-  '📅 開発スケジュール': '- 未定',
+  '🎨 UI/UX設計': '- 未定',
+  '⚡ 機能仕様・API設計': '- 未定',
+  '📱 画面・コンポーネント設計': '- 未定',
+  '📅 開発スケジュール・実装計画': '- 未定',
 };
 
 
@@ -263,15 +240,22 @@ export default function CodePage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'system',
-      content: 'あなたはシニアプロダクトマネージャーです。ユーザーのアプリアイデアを聞いて、詳細な開発企画書を作成してください。技術仕様、UI/UX、開発工程、収益モデルなどを含む包括的な企画書を生成します。'
+      content: 'あなたはシニア技術アーキテクト兼プロダクトエンジニアです。ユーザーのアプリアイデアを聞いて、技術実装に特化した詳細な開発仕様書を作成してください。技術スタック、API設計、データベース設計、UI/UX実装、開発工程に特化した実行可能な技術設計を生成します。'
     },
     {
       role: 'assistant',
-      content: 'こんにちは！📱 私はアプリ開発企画書を作成するAIアシスタントです。\n\n右側にはTaskMaster Proのデモ企画書が表示されていますが、あなたの新しいアプリアイデアを聞かせてください！\n\n• どんなアプリを作りたいですか？\n• 解決したい課題はありますか？\n• ターゲットユーザーは誰ですか？\n• 技術的な要望はありますか？\n\n何でも気軽に話しかけてください。最初のメッセージで新しい企画書作成を開始します！✨'
+      content: 'こんにちは！⚡ 私はアプリ技術仕様書を作成する技術アーキテクトAIです。\n\n右側にはTaskMaster Proのデモ技術仕様書が表示されていますが、あなたの新しいアプリアイデアを聞かせてください！\n\n• どんなアプリを作りたいですか？\n• 技術的な要件はありますか？\n• 対象プラットフォームは？\n• 使用したい技術スタックは？\n\n技術実装の観点から詳細な仕様書を作成します。最初のメッセージで新しい技術仕様書作成を開始します！🔧'
     }
   ]);
   const [sections, setSections] = useState<Sections>(demoSections);
   const [isFirstMessage, setIsFirstMessage] = useState(true);
+  
+  const {
+    copySuccess,
+    handleCopy,
+    handleExport,
+    handleSectionUpdate
+  } = useMarkdownPanel(sections, setSections);
 
   // 自動送信用の関数
   const handleAutoSubmit = useCallback(async (instruction: string) => {
@@ -428,7 +412,6 @@ export default function CodePage() {
   }, [handleAutoSubmit]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -541,24 +524,17 @@ export default function CodePage() {
     }
   };
 
-  const generateMarkdown = () => {
-    const markdown = Object.entries(sections)
-      .map(([title, content]) => `## ${title}\n\n${content}`)
-      .join('\n\n');
-    console.log('Generated markdown:', markdown);
-    return markdown;
-  };
 
   const clearHistory = () => {
-    if (confirm('チャット履歴をクリアしますか？企画書の内容もリセットされます。')) {
+    if (confirm('チャット履歴をクリアしますか？技術仕様書の内容もリセットされます。')) {
       setMessages([
         {
           role: 'system',
-          content: 'あなたはシニアプロダクトマネージャーです。ユーザーのアプリアイデアを聞いて、詳細な開発企画書を作成してください。技術仕様、UI/UX、開発工程、収益モデルなどを含む包括的な企画書を生成します。'
+          content: 'あなたはシニア技術アーキテクト兼プロダクトエンジニアです。ユーザーのアプリアイデアを聞いて、技術実装に特化した詳細な開発仕様書を作成してください。技術スタック、API設計、データベース設計、UI/UX実装、開発工程に特化した実行可能な技術設計を生成します。'
         },
         {
           role: 'assistant',
-          content: 'こんにちは！📱 私はアプリ開発企画書を作成するAIアシスタントです。\n\n右側にはTaskMaster Proのデモ企画書が表示されていますが、あなたの新しいアプリアイデアを聞かせてください！\n\n• どんなアプリを作りたいですか？\n• 解決したい課題はありますか？\n• ターゲットユーザーは誰ですか？\n• 技術的な要望はありますか？\n\n何でも気軽に話しかけてください。最初のメッセージで新しい企画書作成を開始します！✨'
+          content: 'こんにちは！⚡ 私はアプリ技術仕様書を作成する技術アーキテクトAIです。\n\n右側にはTaskMaster Proのデモ技術仕様書が表示されていますが、あなたの新しいアプリアイデアを聞かせてください！\n\n• どんなアプリを作りたいですか？\n• 技術的な要件はありますか？\n• 対象プラットフォームは？\n• 使用したい技術スタックは？\n\n技術実装の観点から詳細な仕様書を作成します。最初のメッセージで新しい技術仕様書作成を開始します！🔧'
         }
       ]);
       setSections(demoSections);
@@ -567,136 +543,46 @@ export default function CodePage() {
   };
 
   return (
-    <div className="h-screen grid grid-cols-2 bg-gray-50">
+    <div className="h-screen grid grid-cols-2 bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Chat Panel */}
-      <div className="border-r border-gray-300 flex flex-col bg-white h-screen">
-        <div className="p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-          <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold text-gray-800">vibeアプリ.md - アプリ企画書AI</h1>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => window.location.href = '/'}
-                className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 transition-colors"
-                title="vibe起業.mdに切り替え"
-              >
-                💼 vibe起業
-              </button>
-              <button
-                onClick={clearHistory}
-                className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
-                title="チャット履歴をクリア"
-              >
-                履歴クリア
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="border-r border-gray-200 flex flex-col bg-white h-screen shadow-sm">
+        <Header
+          title="vibeアプリ.md - 技術仕様書AI"
+          appSwitchUrl="/"
+          appSwitchLabel="💼 vibe起業"
+          onClearHistory={clearHistory}
+        />
         
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
-          {messages.filter(m => m.role !== 'system').map((message, index) => (
-            <div
-              key={index}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] p-3 rounded-lg ${
-                  message.role === 'user'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-800'
-                }`}
-              >
-                {message.content}
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-200 text-gray-800 p-3 rounded-lg">
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={chatEndRef} />
-        </div>
+        <ChatMessages
+          messages={messages}
+          isLoading={isLoading}
+          chatEndRef={chatEndRef}
+        />
 
-        <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
-          <div className="flex space-x-2">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                }
-              }}
-              placeholder="アプリのアイデアや要望を入力してください...（⌘+Enter で送信）"
-              className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !input.trim()}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              送信
-            </button>
-          </div>
-        </form>
+        <ChatInput
+          input={input}
+          isLoading={isLoading}
+          placeholder="アプリのアイデアや要望を入力してください...（⌘+Enter で送信）"
+          onInputChange={setInput}
+          onSubmit={handleSubmit}
+        />
       </div>
 
       {/* Markdown Panel */}
-      <div className="flex flex-col bg-white h-screen">
-        <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-shrink-0">
-          <h2 className="text-xl font-bold text-gray-800">アプリ企画書 (Markdown)</h2>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(generateMarkdown())
-                  .then(() => {
-                    setCopySuccess(true);
-                    setTimeout(() => setCopySuccess(false), 2000);
-                  })
-                  .catch(() => {
-                    alert('コピーに失敗しました。');
-                  });
-              }}
-              className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors text-sm relative"
-            >
-              {copySuccess ? '✓ コピー完了' : 'コピー'}
-            </button>
-            <button
-              onClick={() => {
-                const markdown = generateMarkdown();
-                const blob = new Blob([markdown], { type: 'text/markdown' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `アプリ企画書_${new Date().toISOString().split('T')[0]}.md`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              }}
-              className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
-            >
-              エクスポート(md)
-            </button>
-          </div>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-6 min-h-0">
-          <div className="prose prose-gray max-w-none prose-table:text-sm">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {generateMarkdown()}
-            </ReactMarkdown>
-          </div>
-        </div>
-      </div>
+      <MarkdownPanel
+        title="技術仕様書 (Markdown)"
+        copySuccess={copySuccess}
+        sections={sections}
+        onCopy={handleCopy}
+        onExport={() => handleExport('技術仕様書')}
+        onSectionUpdate={handleSectionUpdate}
+        onEditNotification={(message) => {
+          setMessages(prev => [...prev, { 
+            role: 'user', 
+            content: message 
+          }]);
+        }}
+      />
     </div>
   );
 }

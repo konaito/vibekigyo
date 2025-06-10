@@ -1,17 +1,12 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-
-interface Message {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
-
-interface Sections {
-  [key: string]: string;
-}
+import { Message, Sections } from '../types/chat';
+import ChatMessages from '../components/chat/ChatMessages';
+import ChatInput from '../components/chat/ChatInput';
+import MarkdownPanel from '../components/markdown/MarkdownPanel';
+import Header from '../components/layout/Header';
+import { useMarkdownPanel } from '../hooks/useMarkdownPanel';
 
 const demoSections: Sections = {
   '💡 はじめに': `右側にはデモ企画書が表示されています。最初のメッセージで新しいプロジェクト用にリセットされます。`,
@@ -244,8 +239,14 @@ export default function Home() {
   const [isFirstMessage, setIsFirstMessage] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  
+  const {
+    copySuccess,
+    handleCopy,
+    handleExport,
+    handleSectionUpdate
+  } = useMarkdownPanel(sections, setSections);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -361,13 +362,6 @@ export default function Home() {
     }
   };
 
-  const generateMarkdown = () => {
-    const markdown = Object.entries(sections)
-      .map(([title, content]) => `## ${title}\n\n${content}`)
-      .join('\n\n');
-    console.log('Generated markdown:', markdown);
-    return markdown;
-  };
 
   const clearHistory = () => {
     if (confirm('チャット履歴をクリアしますか？企画書の内容もリセットされます。')) {
@@ -389,153 +383,65 @@ export default function Home() {
 
 
   return (
-    <div className="h-screen grid grid-cols-2 bg-gray-50">
+    <div className="h-screen grid grid-cols-2 bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Chat Panel */}
-      <div className="border-r border-gray-300 flex flex-col bg-white h-screen">
-        <div className="p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-          <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold text-gray-800">vibe起業.md - AIと壁打ち</h1>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => window.location.href = '/code'}
-                className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
-                title="vibeアプリ.mdに切り替え"
-              >
-                📱 vibeアプリ
-              </button>
-              <button
-                onClick={clearHistory}
-                className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
-                title="チャット履歴をクリア"
-              >
-                履歴クリア
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="border-r border-gray-200 flex flex-col bg-white h-screen shadow-sm">
+        <Header
+          title="vibe起業.md - AIと壁打ち"
+          appSwitchUrl="/code"
+          appSwitchLabel="📱 vibeアプリ"
+          onClearHistory={clearHistory}
+        />
         
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
-          {messages.filter(m => m.role !== 'system').map((message, index) => (
-            <div
-              key={index}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] p-3 rounded-lg ${
-                  message.role === 'user'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-800'
-                }`}
-              >
-                {message.content}
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-200 text-gray-800 p-3 rounded-lg">
-                <div className="flex space-x-2">
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={chatEndRef} />
-        </div>
+        <ChatMessages
+          messages={messages}
+          isLoading={isLoading}
+          chatEndRef={chatEndRef}
+        />
 
-        <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
-          <div className="flex space-x-2">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                  e.preventDefault();
-                  handleSubmit(e);
-                }
-              }}
-              placeholder="アイデアや要望を入力してください...（⌘+Enter で送信）"
-              className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !input.trim()}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              送信
-            </button>
-          </div>
-        </form>
+        <ChatInput
+          input={input}
+          isLoading={isLoading}
+          placeholder="アイデアや要望を入力してください...（⌘+Enter で送信）"
+          onInputChange={setInput}
+          onSubmit={handleSubmit}
+        />
       </div>
 
       {/* Markdown Panel */}
-      <div className="flex flex-col bg-white h-screen">
-        <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-shrink-0">
-          <h2 className="text-xl font-bold text-gray-800">企画書 (Markdown)</h2>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(generateMarkdown())
-                  .then(() => {
-                    setCopySuccess(true);
-                    setTimeout(() => setCopySuccess(false), 2000);
-                  })
-                  .catch(() => {
-                    alert('コピーに失敗しました。');
-                  });
-              }}
-              className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors text-sm relative"
-            >
-              {copySuccess ? '✓ コピー完了' : 'コピー'}
-            </button>
-            <button
-              onClick={() => {
-                const markdown = generateMarkdown();
-                const blob = new Blob([markdown], { type: 'text/markdown' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `企画書_${new Date().toISOString().split('T')[0]}.md`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              }}
-              className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
-            >
-              エクスポート(md)
-            </button>
-            <button
-              onClick={() => {
-                // 現在の企画書データをlocalStorageに保存
-                const businessData = {
-                  sections: sections,
-                  timestamp: Date.now(),
-                  lastMessage: messages.filter(m => m.role !== 'system').slice(-1)[0]?.content || ''
-                };
-                localStorage.setItem('vibeBusinessData', JSON.stringify(businessData));
-                
-                // vibeアプリに繋ぎ込み
-                window.location.href = '/code?from=business';
-              }}
-              className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors text-sm"
-            >
-              エクスポート(vibeアプリ)
-            </button>
-          </div>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-6 min-h-0">
-          <div className="prose prose-gray max-w-none prose-table:text-sm">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {generateMarkdown()}
-            </ReactMarkdown>
-          </div>
-        </div>
-      </div>
+      <MarkdownPanel
+        title="企画書 (Markdown)"
+        copySuccess={copySuccess}
+        sections={sections}
+        onCopy={handleCopy}
+        onExport={() => handleExport('企画書')}
+        onSectionUpdate={handleSectionUpdate}
+        onEditNotification={(message) => {
+          setMessages(prev => [...prev, { 
+            role: 'user', 
+            content: message 
+          }]);
+        }}
+        extraActions={
+          <button
+            onClick={() => {
+              // 現在の企画書データをlocalStorageに保存
+              const businessData = {
+                sections: sections,
+                timestamp: Date.now(),
+                lastMessage: messages.filter(m => m.role !== 'system').slice(-1)[0]?.content || ''
+              };
+              localStorage.setItem('vibeBusinessData', JSON.stringify(businessData));
+              
+              // vibeアプリに繋ぎ込み
+              window.location.href = '/code?from=business';
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md"
+          >
+            エクスポート(vibeアプリ)
+          </button>
+        }
+      />
     </div>
   );
 }
