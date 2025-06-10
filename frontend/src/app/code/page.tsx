@@ -7,6 +7,7 @@ import ChatInput from '../../components/chat/ChatInput';
 import MarkdownPanel from '../../components/markdown/MarkdownPanel';
 import Header from '../../components/layout/Header';
 import { useMarkdownPanel } from '../../hooks/useMarkdownPanel';
+import { useUserLevel } from '../../hooks/useUserLevel';
 import { formUrl } from '../../lib/form-url';
 import { techDemoSections, techTemplateSections } from '../../data/tech-demo-sections';
 
@@ -48,6 +49,8 @@ export default function CodePage() {
   const [sections, setSections] = useState<Sections>(techDemoSections);
   const [isFirstMessage, setIsFirstMessage] = useState(true);
   
+  const { userLevel, setUserLevel } = useUserLevel();
+  
   const {
     copySuccess,
     handleCopy,
@@ -66,7 +69,8 @@ export default function CodePage() {
         body: JSON.stringify({
           instruction,
           sections: techTemplateSections, // 空のテンプレートから開始
-          messages: messages
+          messages: messages,
+          userLevel
         }),
       });
 
@@ -164,7 +168,7 @@ export default function CodePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [messages]);
+  }, [messages, userLevel]);
 
   // URLパラメータから事業アイデアを受け取る
   useEffect(() => {
@@ -254,7 +258,8 @@ export default function CodePage() {
         body: JSON.stringify({
           instruction: userMessage,
           sections,
-          messages: [...messages, { role: 'user', content: userMessage }]
+          messages: [...messages, { role: 'user', content: userMessage }],
+          userLevel
         }),
       });
 
@@ -355,45 +360,6 @@ export default function CodePage() {
   };
 
 
-  const clearHistory = () => {
-    if (confirm('チャット履歴をクリアしますか？技術仕様書の内容もリセットされます。')) {
-      setMessages([
-        {
-          role: 'system',
-          content: 'あなたはシニア技術アーキテクト兼プロダクトエンジニアです。ユーザーのアプリアイデアを聞いて、技術実装に特化した詳細な開発仕様書を作成してください。技術スタック、API設計、データベース設計、UI/UX実装、開発工程に特化した実行可能な技術設計を生成します。'
-        },
-        {
-          role: 'assistant',
-          content: `# こんにちは！⚡ 
-
-私はアプリ技術仕様書を作成する**技術アーキテクトAI**です。
-
-## 🔍 最新技術情報にアクセス可能
-**web検索機能**で最新の技術動向、ライブラリ情報、ベストプラクティスを調査できます
-
-## 💬 マークダウン対応チャット
-チャットでも**見出し**、*コード*、リスト、テーブルなどのマークダウンが使えます！
-
-右側にはTaskMaster Proのデモ技術仕様書が表示されていますが、あなたの新しいアプリアイデアを聞かせてください！
-
-### 質問例：
-- どんなアプリを作りたいですか？
-- 技術的な要件はありますか？
-- 対象プラットフォームは？
-
-最新の技術動向を調査しながら、実装可能な技術仕様書を作成します。
-
-**💡 ヒント：**
-- **事業プランから考えたい**場合は → [💼 vibe起業](/)で事業企画書を作成してからエクスポート
-- **アプリアイデアが具体的**な場合は → このまま技術仕様書作成を進めましょう！
-
-> 最初のメッセージで新しい技術仕様書作成を開始します！🔧`
-        }
-      ]);
-      setSections(techDemoSections);
-      setIsFirstMessage(true);
-    }
-  };
 
   return (
     <div className="h-screen grid grid-cols-2 bg-gradient-to-br from-gray-50 to-gray-100">
@@ -403,7 +369,8 @@ export default function CodePage() {
           title="vibeアプリ.md - 技術仕様書AI"
           appSwitchUrl="/"
           appSwitchLabel="💼 vibe起業"
-          onClearHistory={clearHistory}
+          userLevel={userLevel}
+          onUserLevelChange={setUserLevel}
         />
         
         <ChatMessages

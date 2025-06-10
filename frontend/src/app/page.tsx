@@ -185,43 +185,6 @@ export default function Home() {
   };
 
 
-  const clearHistory = () => {
-    if (confirm('チャット履歴をクリアしますか？企画書の内容もリセットされます。')) {
-      // 状態をリセット
-      setMessages([
-        {
-          role: 'system',
-          content: 'あなたはプロダクトマネージャーの書記です。ユーザーの発言を受けて、適切なMarkdownセクションを更新してください。'
-        },
-        {
-          role: 'assistant',
-          content: `# こんにちは！👋 
-
-私はあなたの事業アイデアを企画書に仕上げる**AIパートナー**です。
-
-## 🔍 最新市場情報にアクセス可能
-**web検索機能**で競合分析、市場規模、投資動向などをリアルタイム調査できます
-
-右側にはvibe起業.mdのデモ企画書が表示されていますが、あなたの新しいアイデアを聞かせてください！
-
-### 質問例：
-- どんな事業を考えていますか？
-- 解決したい課題はありますか？  
-- 既に何かプロダクトのアイデアはありますか？
-
-市場調査や競合分析もリアルタイムで行いながら、データに基づいた企画書を一緒に作成しましょう！
-
-**💡 ヒント：**
-- **具体的な事業アイデア**が決まっている場合は → [📱 vibeアプリ](/code)でプロダクト設計を開始
-- **事業アイデアから考えたい**場合は → このまま企画書作成を進めましょう！
-
-> 最初のメッセージで新しい企画書作成を開始します！✨`
-        }
-      ]);
-      setSections(businessDemoSections);
-      setIsFirstMessage(true);
-    }
-  };
 
 
   return (
@@ -232,7 +195,6 @@ export default function Home() {
           title="vibe起業.md - AIと壁打ち"
           appSwitchUrl="/code"
           appSwitchLabel="📱 vibeアプリ"
-          onClearHistory={clearHistory}
         />
         
         <ChatMessages
