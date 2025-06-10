@@ -165,8 +165,8 @@ export default function Home() {
       console.error('Error:', error);
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: error instanceof Error && error.message.includes('API') 
-          ? 'APIキーが設定されていないか、無効です。.env.localファイルにOPENROUTER_API_KEYを設定してください。' 
+        content: error instanceof Error 
+          ? error.message 
           : 'エラーが発生しました。もう一度お試しください。' 
       }]);
     } finally {

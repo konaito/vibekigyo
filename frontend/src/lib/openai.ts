@@ -67,9 +67,19 @@ export async function callOpenAI(
   if (!response.ok) {
     const error = await response.text();
     console.error('OpenRouter API error:', response.status, error);
+    
     if (response.status === 401 || response.status === 403) {
       throw new Error('API authentication failed. Please check your OPENROUTER_API_KEY.');
     }
+    
+    if (response.status === 502 || response.status === 503 || response.status === 504) {
+      throw new Error('AIサーバーが一時的に利用できません。しばらく待ってから再度お試しください。');
+    }
+    
+    if (response.status === 429) {
+      throw new Error('APIの利用制限に達しました。しばらく待ってから再度お試しください。');
+    }
+    
     throw new Error(`OpenRouter API error: ${response.status} - ${error}`);
   }
 
