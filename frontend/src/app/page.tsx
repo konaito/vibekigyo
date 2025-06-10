@@ -214,7 +214,6 @@ export default function Home() {
 
       {/* Markdown Panel */}
       <MarkdownPanel
-        title="企画書 (Markdown)"
         copySuccess={copySuccess}
         sections={sections}
         onCopy={handleCopy}

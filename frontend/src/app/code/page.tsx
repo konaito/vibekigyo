@@ -389,7 +389,6 @@ export default function CodePage() {
 
       {/* Markdown Panel */}
       <MarkdownPanel
-        title="技術仕様書 (Markdown)"
         copySuccess={copySuccess}
         sections={sections}
         onCopy={handleCopy}

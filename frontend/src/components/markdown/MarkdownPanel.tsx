@@ -6,7 +6,6 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 export default function MarkdownPanel({ 
-  title, 
   copySuccess, 
   sections,
   onCopy, 
@@ -14,7 +13,7 @@ export default function MarkdownPanel({
   onSectionUpdate,
   onEditNotification,
   extraActions 
-}: MarkdownPanelProps) {
+}: Omit<MarkdownPanelProps, 'title'>) {
   const [editingTitle, setEditingTitle] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [editingContent, setEditingContent] = useState<string | null>(null);
@@ -322,8 +321,7 @@ export default function MarkdownPanel({
 
   return (
     <div className="flex flex-col bg-white h-screen">
-      <div className="p-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm flex justify-between items-center flex-shrink-0 shadow-sm">
-        <h2 className="text-2xl font-semibold text-gray-900 tracking-tight">{title}</h2>
+      <div className="p-6 border-b border-gray-100 bg-white/80 backdrop-blur-sm flex justify-end items-center flex-shrink-0 shadow-sm">
         <div className="flex space-x-3">
           <button
             onClick={onCopy}
