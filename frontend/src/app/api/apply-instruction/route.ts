@@ -7,9 +7,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { instruction, sections, messages } = body;
 
-    // Debug logging
-    console.log('API Key exists:', !!process.env.OPENROUTER_API_KEY);
-    console.log('API Key length:', process.env.OPENROUTER_API_KEY?.length);
 
     const systemPrompt = createSystemPrompt(businessPrompt, sections);
 
