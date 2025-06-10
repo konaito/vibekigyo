@@ -81,9 +81,15 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError);
+          throw new Error(`APIエラーが発生しました (ステータス: ${response.status})`);
+        }
         console.error('API Error:', errorData);
-        throw new Error(errorData.details || errorData.error || 'Failed to get response');
+        throw new Error(errorData.details || errorData.error || `APIエラーが発生しました (ステータス: ${response.status})`);
       }
 
       const data = await response.json();
