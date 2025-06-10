@@ -164,7 +164,7 @@ export default function CodePage() {
           .join('\n\n');
         
         // テンプレートセクションにリセット
-        setSections(templateSections);
+        setSections(techTemplateSections);
         
         // 事業アイデア全体を最初のメッセージとして自動送信
         const initialMessage = `以下はvibe起業.mdで作成した事業企画書です。この事業アイデアをアプリとして実現するための詳細な開発企画書を作成してください：\n\n${businessMarkdown}`;
