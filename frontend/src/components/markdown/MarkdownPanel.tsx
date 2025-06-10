@@ -52,11 +52,21 @@ export default function MarkdownPanel({
 
   const handleContentSave = useCallback(() => {
     if (editingContent) {
-      onSectionUpdate(editingContent, newContent);
-      
-      // チャットに編集通知を送信
-      const preview = newContent.length > 50 ? newContent.substring(0, 50) + '...' : newContent;
-      onEditNotification?.(`「${editingContent}」セクションの内容を編集しました: ${preview}`);
+      // 空文字の場合は削除確認
+      if (newContent.trim() === '') {
+        if (confirm(`「${editingContent}」セクションを削除しますか？`)) {
+          onSectionUpdate(editingContent, '');
+          onEditNotification?.(`「${editingContent}」セクションを削除しました。`);
+        } else {
+          return; // キャンセルされた場合は何もしない
+        }
+      } else {
+        onSectionUpdate(editingContent, newContent);
+        
+        // チャットに編集通知を送信
+        const preview = newContent.length > 50 ? newContent.substring(0, 50) + '...' : newContent;
+        onEditNotification?.(`「${editingContent}」セクションの内容を編集しました: ${preview}`);
+      }
     }
     setEditingContent(null);
     setNewContent('');
@@ -174,6 +184,19 @@ export default function MarkdownPanel({
                       💾 保存
                     </button>
                     <button
+                      onClick={() => {
+                        if (confirm(`「${editingContent}」セクションを削除しますか？`)) {
+                          onSectionUpdate(editingContent!, '');
+                          onEditNotification?.(`「${editingContent}」セクションを削除しました。`);
+                          setEditingContent(null);
+                          setNewContent('');
+                        }
+                      }}
+                      className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                    >
+                      🗑️ 削除
+                    </button>
+                    <button
                       onClick={handleContentCancel}
                       className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
                     >
@@ -182,6 +205,8 @@ export default function MarkdownPanel({
                   </div>
                   <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-200">
                     💡 <strong>Markdown記法:</strong> **太字**、*斜体*、`コード`、[リンク](URL)、## 見出し、- リスト項目
+                    <br />
+                    🗑️ <strong>セクション削除:</strong> 内容を全て削除して保存すると、セクション自体を削除できます
                   </div>
                 </div>
               ) : (

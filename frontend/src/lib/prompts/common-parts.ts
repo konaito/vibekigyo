@@ -26,7 +26,8 @@ export const outputFormatSection = `# 出力形式 (Output Format)
 // JSON形式の共通ルール
 export const jsonRulesSection = `# 最重要ルール
 - **\`markdown\`フィールドは、JSONオブジェクトそのものです。文字列ではありません。**
-- \`markdown\`プロパティは、更新がない場合は省略してください。`;
+- \`markdown\`プロパティは、更新がない場合は省略してください。
+- **セクション削除**: \`markdown\`で空文字（""）を指定すると、そのセクションが削除されます。`;
 
 // 現在の状況共有部分
 export const currentStateSection = () => `# 現在の企画書の状況

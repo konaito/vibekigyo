@@ -317,7 +317,19 @@ export default function Home() {
           // Markdown更新のみの場合
           if (data.markdown && Object.keys(data.markdown).length > 0) {
             console.log('Updating sections with markdown object:', data.markdown);
-            setSections(prev => ({ ...prev, ...data.markdown }));
+            // 削除処理を考慮してセクションを更新
+            setSections(prev => {
+              const newSections = { ...prev };
+              Object.entries(data.markdown).forEach(([key, value]) => {
+                if (value === '' || value === null || value === undefined) {
+                  // 空文字の場合はセクションを削除
+                  delete newSections[key];
+                } else {
+                  newSections[key] = value as string;
+                }
+              });
+              return newSections;
+            });
           }
           setMessages(prev => [...prev, { 
             role: 'assistant', 
@@ -329,7 +341,19 @@ export default function Home() {
           // 会話とMarkdown更新の両方の場合
           if (data.markdown && Object.keys(data.markdown).length > 0) {
             console.log('Updating sections with markdown object:', data.markdown);
-            setSections(prev => ({ ...prev, ...data.markdown }));
+            // 削除処理を考慮してセクションを更新
+            setSections(prev => {
+              const newSections = { ...prev };
+              Object.entries(data.markdown).forEach(([key, value]) => {
+                if (value === '' || value === null || value === undefined) {
+                  // 空文字の場合はセクションを削除
+                  delete newSections[key];
+                } else {
+                  newSections[key] = value as string;
+                }
+              });
+              return newSections;
+            });
           }
           setMessages(prev => [...prev, { 
             role: 'assistant', 
