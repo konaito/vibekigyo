@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@slidev/cli": "^51.8.1",
+    "@slidev/theme-default": "^0.25.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/jspdf": "^2.0.0",
     "html2canvas": "^1.4.1",
