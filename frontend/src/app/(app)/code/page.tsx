@@ -11,6 +11,7 @@ import { useSessionManager } from '../../../hooks/useSessionManager';
 import { useChatHandler } from '../../../hooks/useChatHandler';
 import { techDemoSections, techTemplateSections } from '../../../data/tech-demo-sections';
 import { techDefaultMessages } from '../../../data/default-messages';
+import { SectionItem } from '../../../types/chat';
 
 
 export default function CodePage() {
@@ -86,9 +87,11 @@ export default function CodePage() {
         }
         
         // 事業企画書のMarkdown全体を生成
-        const businessMarkdown = Object.entries(parsedData.sections)
-          .map(([title, content]) => `## ${title}\n\n${String(content)}`)
-          .join('\n\n');
+        const businessMarkdown = Array.isArray(parsedData.sections)
+          ? parsedData.sections.map((section: SectionItem) => `## ${section.title}\n\n${section.content}`).join('\n\n')
+          : Object.entries(parsedData.sections)
+              .map(([title, content]) => `## ${title}\n\n${String(content)}`)
+              .join('\n\n');
         
         // テンプレートセクションにリセット
         setSections(techTemplateSections);

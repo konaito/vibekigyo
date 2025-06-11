@@ -48,16 +48,16 @@ export function useChatHandler({
       const newMessages = [...messages, { role: 'user' as const, content: userMessage }];
       setMessages(newMessages);
 
-      // 2. チャット送信時の自動保存
-      await autoSaveSession(newMessages);
-
-      // 3. 最初のメッセージの場合、テンプレートにリセット
-      let sectionsToSend = sections;
+      // 2. 最初のメッセージの場合、テンプレートにリセット
+      let currentSections = sections;
       if (isFirstMessage) {
-        sectionsToSend = templateSections;
+        currentSections = templateSections;
         setSections(templateSections);
         setIsFirstMessage(false);
       }
+
+      // 3. チャット送信時の自動保存（正しいsectionsで保存）
+      await autoSaveSession(newMessages, currentSections);
 
       // 4. AI API呼び出し
       const requestBody: {
@@ -67,7 +67,7 @@ export function useChatHandler({
         userLevel?: string;
       } = {
         instruction: userMessage,
-        sections: sectionsToSend,
+        sections: currentSections,
         messages: newMessages
       };
 
@@ -99,7 +99,7 @@ export function useChatHandler({
 
       // 5. レスポンス処理とUI更新
       let finalMessages = newMessages;
-      let finalSections = sectionsToSend;
+      let finalSections = currentSections;
 
       switch (data.type) {
         case 'chat':
@@ -113,7 +113,7 @@ export function useChatHandler({
         case 'update':
           if (data.markdown && Object.keys(data.markdown).length > 0) {
             console.log('Updating sections with markdown object:', data.markdown);
-            finalSections = [...finalSections];
+            finalSections = [...currentSections];
             Object.entries(data.markdown).forEach(([key, value]) => {
               if (value === '') {
                 finalSections = removeSection(finalSections, key);
@@ -133,7 +133,7 @@ export function useChatHandler({
         case 'chat+update':
           if (data.markdown && Object.keys(data.markdown).length > 0) {
             console.log('Updating sections with markdown object:', data.markdown);
-            finalSections = [...finalSections];
+            finalSections = [...currentSections];
             Object.entries(data.markdown).forEach(([key, value]) => {
               if (value === '') {
                 finalSections = removeSection(finalSections, key);
@@ -153,7 +153,7 @@ export function useChatHandler({
         default:
           // 旧形式との互換性
           if (data.updated) {
-            finalSections = [...finalSections];
+            finalSections = [...currentSections];
             Object.entries(data.updated).forEach(([key, value]) => {
               finalSections = updateSection(finalSections, key, value);
             });
@@ -262,7 +262,7 @@ export function useChatHandler({
         case 'update':
           if (data.markdown && Object.keys(data.markdown).length > 0) {
             console.log('Updating sections with markdown object:', data.markdown);
-            finalSections = [...finalSections];
+            finalSections = [...currentSections];
             Object.entries(data.markdown).forEach(([key, value]) => {
               if (value === '') {
                 finalSections = removeSection(finalSections, key);
@@ -282,7 +282,7 @@ export function useChatHandler({
         case 'chat+update':
           if (data.markdown && Object.keys(data.markdown).length > 0) {
             console.log('Updating sections with markdown object:', data.markdown);
-            finalSections = [...finalSections];
+            finalSections = [...currentSections];
             Object.entries(data.markdown).forEach(([key, value]) => {
               if (value === '') {
                 finalSections = removeSection(finalSections, key);
@@ -301,7 +301,7 @@ export function useChatHandler({
           
         default:
           if (data.updated) {
-            finalSections = [...finalSections];
+            finalSections = [...currentSections];
             Object.entries(data.updated).forEach(([key, value]) => {
               finalSections = updateSection(finalSections, key, value);
             });

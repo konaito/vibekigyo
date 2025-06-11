@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { app_type, title, messages, markdown_content } = body
+    const { app_type, title, messages, sections } = body
 
     if (!app_type || !messages) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         app_type,
         title: sessionTitle,
         messages,
-        markdown_content
+        sections: sections || {}
       })
       .select()
       .single()

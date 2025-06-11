@@ -1,7 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useState, useEffect, useCallback } from 'react';
-import { MarkdownPanelProps } from '../../types/chat';
+import { MarkdownPanelProps, findSection } from '../../types/chat';
 
 interface UserLevelToggleProps {
   userLevel?: 'beginner' | 'engineer';
@@ -33,13 +33,15 @@ export default function MarkdownPanel({
   const handleContentClick = (e: React.MouseEvent, sectionTitle: string) => {
     e.stopPropagation();
     setEditingContent(sectionTitle);
-    setNewContent(sections[sectionTitle] || '');
+    const section = findSection(sections, sectionTitle);
+    setNewContent(section?.content || '');
   };
 
   const handleTitleSave = useCallback(() => {
     if (editingTitle && newTitle.trim() && newTitle !== editingTitle) {
       // タイトル変更をセクション更新として処理
-      const content = sections[editingTitle];
+      const section = findSection(sections, editingTitle);
+      const content = section?.content || '';
       onSectionUpdate(newTitle.trim(), content);
       // 古いセクションを削除（空文字で更新）
       onSectionUpdate(editingTitle, '');
@@ -65,7 +67,8 @@ export default function MarkdownPanel({
           onEditNotification?.(`「${editingContent}」セクションを削除しました。`);
         } else {
           // キャンセルされた場合は元の内容を復元
-          setNewContent(sections[editingContent] || '');
+          const section = findSection(sections, editingContent);
+          setNewContent(section?.content || '');
           return;
         }
       } else {
@@ -164,13 +167,13 @@ export default function MarkdownPanel({
       
       <div className="flex-1 overflow-y-auto p-8 min-h-0 bg-gradient-to-b from-gray-50/20 to-transparent">
         <div className="prose prose-gray max-w-none prose-table:text-sm">
-          {Object.entries(sections).map(([sectionTitle, content]) => (
+          {sections.map((section, index) => (
             <div 
-              key={sectionTitle} 
+              key={`${section.title}-${index}`} 
               className="mb-4 p-4 rounded-xl transition-all duration-300 hover:border-2 hover:border-blue-300 hover:bg-blue-50/30 hover:shadow-lg hover:scale-[1.02] group border-2 border-transparent"
             >
               <div className="flex items-center justify-between">
-              {editingTitle === sectionTitle ? (
+              {editingTitle === section.title ? (
                 <div className="border-b-2 border-blue-200 pb-2 mb-4 mt-0 flex items-center space-x-2">
                   <input
                     type="text"
@@ -196,10 +199,10 @@ export default function MarkdownPanel({
                 <h2 className="group-hover:text-blue-600 transition-colors duration-200 border-b-2 border-blue-200 pb-2 mb-4 mt-0 flex items-center">
                   <span 
                     className="mr-2 cursor-pointer hover:bg-blue-100 px-1 rounded" 
-                    onClick={(e) => handleTitleClick(e, sectionTitle)}
+                    onClick={(e) => handleTitleClick(e, section.title)}
                     title="タイトルをクリックして編集"
                   >
-                    {sectionTitle}
+                    {section.title}
                   </span>
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-sm">✏️</span>
                 </h2>
@@ -207,9 +210,9 @@ export default function MarkdownPanel({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm(`「${sectionTitle}」セクションを削除しますか？`)) {
-                      onSectionUpdate(sectionTitle, '');
-                      onEditNotification?.(`「${sectionTitle}」セクションを削除しました。`);
+                    if (confirm(`「${section.title}」セクションを削除しますか？`)) {
+                      onSectionUpdate(section.title, '');
+                      onEditNotification?.(`「${section.title}」セクションを削除しました。`);
                     }
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-2 py-1 text-red-600 hover:bg-red-100 rounded text-sm"
@@ -219,7 +222,7 @@ export default function MarkdownPanel({
                 </button>
               </div>
 
-              {editingContent === sectionTitle ? (
+              {editingContent === section.title ? (
                 <div className="space-y-2">
                   <textarea
                     value={newContent}
@@ -250,11 +253,11 @@ export default function MarkdownPanel({
               ) : (
                 <div 
                   className="ml-4 group-hover:ml-6 transition-all duration-200 cursor-pointer hover:bg-blue-100 p-2 rounded"
-                  onClick={(e) => handleContentClick(e, sectionTitle)}
+                  onClick={(e) => handleContentClick(e, section.title)}
                   title="コンテンツをクリックして編集"
                 >
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {content}
+                    {section.content}
                   </ReactMarkdown>
                 </div>
               )}

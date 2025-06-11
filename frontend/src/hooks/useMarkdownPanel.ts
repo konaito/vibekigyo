@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Sections } from '../types/chat';
+import { Sections, updateSection, removeSection } from '../types/chat';
 
 export function useMarkdownPanel(sections: Sections, setSections: (sections: Sections) => void) {
   const [copySuccess, setCopySuccess] = useState(false);
 
   const generateMarkdown = () => {
-    const markdown = Object.entries(sections)
-      .map(([title, content]) => `## ${title}\n\n${content}`)
+    const markdown = sections
+      .map(section => `## ${section.title}\n\n${section.content}`)
       .join('\n\n');
     return markdown;
   };
@@ -36,17 +36,14 @@ export function useMarkdownPanel(sections: Sections, setSections: (sections: Sec
   };
 
   const handleSectionUpdate = (sectionTitle: string, content: string) => {
+    let newSections: Sections;
     if (content === '') {
       // 空文字の場合はセクションを削除
-      const newSections = { ...sections };
-      delete newSections[sectionTitle];
-      setSections(newSections);
+      newSections = removeSection(sections, sectionTitle);
     } else {
-      setSections({
-        ...sections,
-        [sectionTitle]: content
-      });
+      newSections = updateSection(sections, sectionTitle, content);
     }
+    setSections(newSections);
   };
 
   return {

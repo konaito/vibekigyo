@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Message, Sections } from '../types/chat';
 import { ChatSession, ChatSessionManager } from '../lib/chat-sessions';
 import { SessionManager } from '../lib/session-manager';
@@ -19,6 +19,25 @@ export function useSessionManager({
   const [messages, setMessages] = useState<Message[]>(defaultMessages);
   const [sections, setSections] = useState<Sections>(defaultSections);
   const [isFirstMessage, setIsFirstMessage] = useState(true);
+
+  // メッセージまたはセクションが変更されたときの自動保存
+  useEffect(() => {
+    // 初期状態や空の状態では保存しない
+    if (messages.length <= 1 || Object.keys(sections).length === 0) return;
+    
+    const saveTimeout = setTimeout(async () => {
+      try {
+        await sessionManager.autoSave(messages, sections);
+        if (!currentSessionId && sessionManager.getCurrentSessionId()) {
+          setCurrentSessionId(sessionManager.getCurrentSessionId());
+        }
+      } catch (error) {
+        console.error('Auto-save failed:', error);
+      }
+    }, 500); // 500ms のデバウンス
+
+    return () => clearTimeout(saveTimeout);
+  }, [messages, sections, sessionManager, currentSessionId]);
 
   // 自動保存
   const autoSaveSession = useCallback(async (newMessages?: Message[], forceSections?: Sections) => {
@@ -91,10 +110,8 @@ export function useSessionManager({
     setMessages(newMessages);
     
     // MDの変更がチャット欄に反映されたタイミングで保存
-    setTimeout(async () => {
-      await autoSaveSession(newMessages, sections);
-    }, 100);
-  }, [messages, sections, autoSaveSession]);
+    // sectionsはuseEffectで監視して自動保存される
+  }, [messages]);
 
 
   return {

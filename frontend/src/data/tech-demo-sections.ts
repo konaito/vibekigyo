@@ -1,18 +1,24 @@
 import { Sections } from '../types/chat';
 
-export const techDemoSections: Sections = {
-  '💡 はじめに': `右側にはデモ技術仕様書が表示されています。最初のメッセージで新しいプロジェクト用にリセットされます。`,
-
-  '📌 プロジェクト概要': `| 項目 | 内容 |
+export const techDemoSections: Sections = [
+  {
+    title: '💡 はじめに',
+    content: `右側にはデモ技術仕様書が表示されています。最初のメッセージで新しいプロジェクト用にリセットされます。`
+  },
+  {
+    title: '📌 プロジェクト概要',
+    content: `| 項目 | 内容 |
 |------|------|
 | プロジェクト名 | vibeアプリ.md |
 | 概要 | AI対話型の技術仕様書生成プラットフォーム |
 | 目的 | エンジニアが即座に開発着手できる詳細な技術設計書を生成 |
 | プラットフォーム | Web (Next.js) |
 | 技術スタック | Next.js + TypeScript + Tailwind + OpenRouter API |
-| MVP版 | v0.1 - 基本的な対話と仕様書生成機能実装済み |`,
-
-  '🛠 技術仕様': `### フロントエンド技術スタック
+| MVP版 | v0.1 - 基本的な対話と仕様書生成機能実装済み |`
+  },
+  {
+    title: '🛠 技術仕様',
+    content: `### フロントエンド技術スタック
 - **フレームワーク**: Next.js 15.3 (App Router)
 - **言語**: TypeScript 5.x
 - **スタイリング**: Tailwind CSS 3.4
@@ -35,11 +41,11 @@ export const techDemoSections: Sections = {
 ### インフラ・デプロイ
 - **ホスティング**: Vercel
 - **CI/CD**: GitHub Actions
-- **モニタリング**: Vercel Analytics
-
-`,
-
-  '🎨 UI/UX設計': `### デザインシステム
+- **モニタリング**: Vercel Analytics`
+  },
+  {
+    title: '🎨 UI/UX設計',
+    content: `### デザインシステム
 - **カラーパレット**: 
   - Primary: Purple (技術的な印象)
   - Secondary: Blue (信頼性)
@@ -56,11 +62,11 @@ export const techDemoSections: Sections = {
 ### 画面遷移設計
 - **/** : ビジネス企画書作成 (vibe起業.md)
 - **/code**: 技術仕様書作成 (vibeアプリ.md)
-- **localStorage**: アプリ間データ連携
-
-`,
-
-  '⚡ 機能仕様・API設計': `### コア機能の技術実装
+- **localStorage**: アプリ間データ連携`
+  },
+  {
+    title: '⚡ 機能仕様・API設計',
+    content: `### コア機能の技術実装
 1. **AI対話機能**
    - OpenRouter API経由でGPT-4oと通信
    - Structured Output (JSON Schema)で応答制御
@@ -92,11 +98,11 @@ export const techDemoSections: Sections = {
 - **messages**: チャット履歴 (Message[])
 - **sections**: 仕様書セクション (Sections)
 - **isLoading**: ローディング状態
-- **isFirstMessage**: 初回メッセージフラグ
-
-`,
-
-  '📱 画面・コンポーネント設計': `### 主要画面の技術仕様
+- **isFirstMessage**: 初回メッセージフラグ`
+  },
+  {
+    title: '📱 画面・コンポーネント設計',
+    content: `### 主要画面の技術仕様
 1. **チャットパネル (左側)**
    - 高さ: 100vh固定
    - スクロール: 自動最下部
@@ -110,11 +116,11 @@ export const techDemoSections: Sections = {
 ### 共通コンポーネント設計
 - **エラーバウンダリ**: 未実装 (要追加)
 - **ローディング**: スケルトンUI
-- **トースト通知**: 編集完了通知
-
-`,
-
-  '📅 開発スケジュール・実装計画': `### Phase 1: MVP完成 (完了)
+- **トースト通知**: 編集完了通知`
+  },
+  {
+    title: '📅 開発スケジュール・実装計画',
+    content: `### Phase 1: MVP完成 (完了)
 - ✅ 基本的な対話機能
 - ✅ 仕様書生成・更新
 - ✅ セクション編集機能
@@ -130,11 +136,11 @@ export const techDemoSections: Sections = {
 - [ ] テスト自動化 (Jest/Playwright)
 - [ ] パフォーマンス最適化
 - [ ] SEO対策
-- [ ] アクセシビリティ改善
-
-`,
-
-  '🔧 開発・運用戦略': `### 開発環境・ツール
+- [ ] アクセシビリティ改善`
+  },
+  {
+    title: '🔧 開発・運用戦略',
+    content: `### 開発環境・ツール
 - **エディタ**: VS Code推奨
 - **パッケージマネージャー**: Bun
 - **コード品質**: ESLint + Prettier
@@ -150,11 +156,11 @@ export const techDemoSections: Sections = {
 - **自動テスト**: PR時に実行
 - **自動デプロイ**: main branch更新時
 - **Preview環境**: PR毎に生成
-- **ロールバック**: Vercel自動化
-
-`,
-
-  '⚠️ 技術的リスク・課題': `### パフォーマンス課題
+- **ロールバック**: Vercel自動化`
+  },
+  {
+    title: '⚠️ 技術的リスク・課題',
+    content: `### パフォーマンス課題
 - **課題**: 大規模仕様書でのレンダリング遅延
 - **対策**: 仮想スクロール実装検討
 
@@ -169,21 +175,24 @@ export const techDemoSections: Sections = {
 ### 技術的制約・対策
 - **AI応答遅延**: ストリーミング応答実装
 - **モバイル対応**: レスポンシブ設計強化
-- **オフライン対応**: Service Worker検討
+- **オフライン対応**: Service Worker検討`
+  }
+];
 
-`
-};
-
-export const techTemplateSections: Sections = {
-  '📌 プロジェクト概要': `| 項目 | 内容 |
+export const techTemplateSections: Sections = [
+  {
+    title: '📌 プロジェクト概要',
+    content: `| 項目 | 内容 |
 |------|------|
 | プロジェクト名 | [あなたのアプリ名] |
 | 概要 | [何を解決する、どんなアプリか] |
 | 目的 | [なぜ作るのか、ユーザーへの価値] |
 | プラットフォーム | [Web/iOS/Android/デスクトップ] |
-| 現状 | [開発状況・MVP段階] |`,
-
-  '🛠 技術仕様': `### フロントエンド技術スタック
+| 現状 | [開発状況・MVP段階] |`
+  },
+  {
+    title: '🛠 技術仕様',
+    content: `### フロントエンド技術スタック
 - **フレームワーク**: [React/Vue/Angular/Flutter等]
 - **言語**: [TypeScript/JavaScript/Dart等]
 - **スタイリング**: [Tailwind/styled-components/Material Design等]
@@ -200,9 +209,11 @@ export const techTemplateSections: Sections = {
 
 ### インフラ・デプロイ
 - **ホスティング**: [Vercel/Supabase/AWS/Firebase等]
-- **CI/CD**: [GitHub Actions/CodeMagic等]`,
-
-  '🎨 UI/UX設計': `### デザインシステム
+- **CI/CD**: [GitHub Actions/CodeMagic等]`
+  },
+  {
+    title: '🎨 UI/UX設計',
+    content: `### デザインシステム
 - **カラーパレット**: [メイン色・サブ色・背景色]
 - **タイポグラフィ**: [フォント選択・サイズ体系]
 - **レスポンシブ**: [対応デバイス・ブレークポイント]
@@ -215,9 +226,11 @@ export const techTemplateSections: Sections = {
 ### 画面遷移設計
 - **[画面1]**: [URLパス・機能]
 - **[画面2]**: [URLパス・機能]
-- **[画面3]**: [URLパス・機能]`,
-
-  '⚡ 機能仕様・API設計': `### コア機能の技術実装
+- **[画面3]**: [URLパス・機能]`
+  },
+  {
+    title: '⚡ 機能仕様・API設計',
+    content: `### コア機能の技術実装
 1. **[機能1]**
    - [具体的な実装方法]
    - [使用技術・ライブラリ]
@@ -241,9 +254,11 @@ export const techTemplateSections: Sections = {
 
 ### データベース設計
 - **[テーブル1]**: [カラム・関係性・Supabase RLS設定]
-- **[テーブル2]**: [カラム・関係性・リアルタイム設定]`,
-
-  '📱 画面・コンポーネント設計': `### 主要画面の技術仕様
+- **[テーブル2]**: [カラム・関係性・リアルタイム設定]`
+  },
+  {
+    title: '📱 画面・コンポーネント設計',
+    content: `### 主要画面の技術仕様
 1. **[画面1]**
    - [レイアウト・機能]
    - [技術的実装詳細]
@@ -258,9 +273,11 @@ export const techTemplateSections: Sections = {
 
 ### 状態管理設計
 - **[状態1]**: [管理方法・リアルタイム更新対応]
-- **[状態2]**: [管理方法・オフライン対応]`,
-
-  '📅 開発スケジュール・実装計画': `### Phase 1: MVP開発 ([期間])
+- **[状態2]**: [管理方法・オフライン対応]`
+  },
+  {
+    title: '📅 開発スケジュール・実装計画',
+    content: `### Phase 1: MVP開発 ([期間])
 - [ ] [機能・タスク1]
 - [ ] [機能・タスク2]
 - [ ] [機能・タスク3]
@@ -277,9 +294,11 @@ export const techTemplateSections: Sections = {
 
 ### 成功指標・KPI
 - **技術的KPI**: [パフォーマンス・エラー率等]
-- **ユーザーKPI**: [利用率・満足度等]`,
-
-  '🔧 開発・運用戦略': `### 開発環境・ツール
+- **ユーザーKPI**: [利用率・満足度等]`
+  },
+  {
+    title: '🔧 開発・運用戦略',
+    content: `### 開発環境・ツール
 - **エディタ**: [VS Code/WebStorm等]
 - **パッケージマネージャー**: [npm/yarn/bun等]
 - **コード品質**: [ESLint/Prettier/SonarQube等]
@@ -295,9 +314,11 @@ export const techTemplateSections: Sections = {
 - **自動テスト**: [実行タイミング]
 - **自動デプロイ**: [デプロイ戦略]
 - **環境管理**: [dev/staging/prod]
-- **モニタリング**: [ログ・メトリクス収集]`,
-
-  '⚠️ 技術的リスク・課題': `### パフォーマンス課題
+- **モニタリング**: [ログ・メトリクス収集]`
+  },
+  {
+    title: '⚠️ 技術的リスク・課題',
+    content: `### パフォーマンス課題
 - **課題**: [想定される性能問題]
 - **対策**: [解決策・代替案]
 
@@ -313,4 +334,5 @@ export const techTemplateSections: Sections = {
 - **[制約1]**: [制約内容] → [対策]
 - **[制約2]**: [制約内容] → [対策]
 - **[制約3]**: [制約内容] → [対策]`
-};
+  }
+];

@@ -1,3 +1,5 @@
+import { Sections } from '../types/chat';
+
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
@@ -10,6 +12,7 @@ export interface ChatSession {
   title: string
   messages: ChatMessage[]
   markdown_content?: string
+  sections: Sections
   created_at: string
   updated_at: string
 }
@@ -48,7 +51,7 @@ export class ChatSessionManager {
   static async createSession(
     appType: 'business' | 'app',
     messages: ChatMessage[],
-    markdownContent?: string,
+    sections: Sections,
     title?: string
   ): Promise<ChatSession> {
     const data = await this.request('/api/chat-sessions', {
@@ -57,7 +60,7 @@ export class ChatSessionManager {
         app_type: appType,
         title,
         messages,
-        markdown_content: markdownContent,
+        sections,
       }),
     })
     return data.session
@@ -69,7 +72,7 @@ export class ChatSessionManager {
     updates: {
       title?: string
       messages?: ChatMessage[]
-      markdown_content?: string
+      sections?: Sections
     }
   ): Promise<ChatSession> {
     const data = await this.request(`/api/chat-sessions/${id}`, {
@@ -91,18 +94,18 @@ export class ChatSessionManager {
     sessionId: string | null,
     appType: 'business' | 'app',
     messages: ChatMessage[],
-    markdownContent?: string
+    sections: Sections
   ): Promise<string> {
     if (sessionId) {
       // 既存セッションを更新
       await this.updateSession(sessionId, {
         messages,
-        markdown_content: markdownContent,
+        sections,
       })
       return sessionId
     } else {
       // 新しいセッションを作成
-      const session = await this.createSession(appType, messages, markdownContent)
+      const session = await this.createSession(appType, messages, sections)
       return session.id
     }
   }
