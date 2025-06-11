@@ -43,18 +43,13 @@ export class SessionManager {
           content: msg.content
         }));
 
-      // セクションをMarkdown文字列に変換（全セクションを保存）
-      const markdownContent = Object.entries(sectionsToSave)
-        .map(([key, value]) => `## ${key}\n\n${value}`)
-        .join('\n\n');
-
       console.log(`Saving ${this.appType} session with sections:`, Object.keys(sectionsToSave));
 
       const sessionId = await ChatSessionManager.autoSave(
         this.currentSessionId,
         this.appType,
         chatMessages,
-        markdownContent
+        sectionsToSave
       );
 
       if (!this.currentSessionId) {
@@ -87,22 +82,9 @@ export class SessionManager {
       const restoredMessages: Message[] = [systemMessage, ...session.messages];
       setMessages(restoredMessages);
       
-      // Markdownコンテンツを復元
-      if (session.markdown_content) {
-        // Markdownコンテンツをセクションに分割
-        const sectionsFromMarkdown: Sections = {};
-        const sections = session.markdown_content.split('## ').filter(Boolean);
-        
-        sections.forEach((section: string) => {
-          const lines = section.split('\n');
-          const title = lines[0];
-          const content = lines.slice(2).join('\n'); // 最初の空行をスキップ
-          if (title && content) {
-            sectionsFromMarkdown[title] = content;
-          }
-        });
-        
-        setSections(sectionsFromMarkdown);
+      // セクションデータを復元
+      if (session.sections) {
+        setSections(session.sections);
       }
       
     } catch (error) {

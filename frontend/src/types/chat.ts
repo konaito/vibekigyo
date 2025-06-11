@@ -3,9 +3,37 @@ export interface Message {
   content: string;
 }
 
-export interface Sections {
-  [key: string]: string;
+export interface SectionItem {
+  title: string;
+  content: string;
 }
+
+export type Sections = SectionItem[];
+
+// ヘルパー関数：セクションをタイトルで検索
+export function findSection(sections: Sections, title: string): SectionItem | undefined {
+  return sections.find(section => section.title === title);
+}
+
+// ヘルパー関数：セクションを更新
+export function updateSection(sections: Sections, title: string, content: string): Sections {
+  const index = sections.findIndex(section => section.title === title);
+  if (index >= 0) {
+    // 既存セクションを更新
+    const newSections = [...sections];
+    newSections[index] = { title, content };
+    return newSections;
+  } else {
+    // 新しいセクションを末尾に追加
+    return [...sections, { title, content }];
+  }
+}
+
+// ヘルパー関数：セクションを削除
+export function removeSection(sections: Sections, title: string): Sections {
+  return sections.filter(section => section.title !== title);
+}
+
 
 export interface ChatProps {
   messages: Message[];

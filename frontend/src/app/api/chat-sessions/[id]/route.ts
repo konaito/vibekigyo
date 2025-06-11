@@ -47,12 +47,12 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { title, messages, markdown_content } = body
+    const { title, messages, sections } = body
 
     const updateData: Record<string, unknown> = {}
     if (title !== undefined) updateData.title = title
     if (messages !== undefined) updateData.messages = messages
-    if (markdown_content !== undefined) updateData.markdown_content = markdown_content
+    if (sections !== undefined) updateData.sections = sections
 
     const { data, error } = await supabase
       .from('chat_sessions')
