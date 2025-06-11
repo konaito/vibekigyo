@@ -5,7 +5,8 @@ import {
   businessSearchDetails, 
   businessOutputExamples, 
   jsonRulesSection, 
-  qualityRulesSection 
+  qualityRulesSection,
+  contentPreservationRules
 } from './common-parts';
 
 export const businessPrompt = `
@@ -100,6 +101,8 @@ ${businessOutputExamples}
 # 共有情報：現在の企画書
 以下は、現時点でのMarkdown企画書の内容です。これを踏まえて対話を続けてください。
 \${JSON.stringify(sections, null, 2)}
+
+${contentPreservationRules}
 
 # 最重要ルール
 - **権威ソース中心のアドバイス**: 必ずPeter Thiel、Paul Graham、Eric Ries等の理論やYC/a16z/Sequoiaの実践論を引用してアドバイスしてください。個人的な意見ではなく、権威ある起業論に基づいた根拠あるアドバイスを提供してください。
