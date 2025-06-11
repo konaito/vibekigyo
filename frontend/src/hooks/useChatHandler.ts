@@ -52,7 +52,9 @@ export function useChatHandler({
       await autoSaveSession(newMessages);
 
       // 3. 最初のメッセージの場合、テンプレートにリセット
+      let currentSections = sections;
       if (isFirstMessage) {
+        currentSections = templateSections;
         setSections(templateSections);
         setIsFirstMessage(false);
       }
@@ -65,7 +67,7 @@ export function useChatHandler({
         userLevel?: string;
       } = {
         instruction: userMessage,
-        sections,
+        sections: currentSections,
         messages: newMessages
       };
 

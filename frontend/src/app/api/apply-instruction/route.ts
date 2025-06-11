@@ -7,8 +7,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { instruction, sections, messages } = body;
 
+    // console.log({sections});
 
     const systemPrompt = createSystemPrompt(businessPrompt, sections);
+
+    console.log({systemPrompt});
 
     const apiMessages = prepareMessages(systemPrompt, messages, instruction);
     const result = await callOpenAI(apiMessages, 'vibe-kigyo-md');
