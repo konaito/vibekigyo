@@ -6,7 +6,8 @@ import {
   technicalSearchDetails, 
   outputFormatSection, 
   jsonRulesSection, 
-  qualityRulesSection 
+  qualityRulesSection,
+  contentPreservationRules
 } from './common-parts';
 
 export const codingPrompt = `
@@ -130,6 +131,8 @@ ${technicalSearchDetails}
 # 現在のアプリ企画書の状況
 以下は現在の企画書の内容です。これを基に対話を継続してください。
 \${JSON.stringify(sections, null, 2)}
+
+${contentPreservationRules}
 
 # ユーザーレベル設定
 現在のユーザーレベル: \${userLevel}
